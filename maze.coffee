@@ -124,18 +124,18 @@ class MazeUI3D
           if @maze.passage_exists([[x, y, z], [x, y, z + 1]])
             # paint up arrow
             context.beginPath()
-            context.moveTo(x * 71 + 27, y * 71 + 13)
-            context.lineTo(x * 71 + 35, y * 71 + 8)
-            context.lineTo(x * 71 + 43, y * 71 + 13)
+            context.moveTo(x * 71 + 27, y * 71 + 18)
+            context.lineTo(x * 71 + 35, y * 71 + 13)
+            context.lineTo(x * 71 + 43, y * 71 + 18)
             context.lineWidth = 3
             context.strokeStyle = 'grey'
             context.stroke()
           if @maze.passage_exists([[x, y, z - 1], [x, y, z]])
             # paint down arrow
             context.beginPath()
-            context.moveTo(x * 71 + 27, y * 71 + 57)
-            context.lineTo(x * 71 + 35, y * 71 + 62)
-            context.lineTo(x * 71 + 43, y * 71 + 57)
+            context.moveTo(x * 71 + 27, y * 71 + 53)
+            context.lineTo(x * 71 + 35, y * 71 + 58)
+            context.lineTo(x * 71 + 43, y * 71 + 53)
             context.lineWidth = 3
             context.strokeStyle = 'grey'
             context.stroke()
