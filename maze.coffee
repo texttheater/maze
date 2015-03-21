@@ -49,7 +49,7 @@ class MazeUI3D
     [@x, @y, @z] = @maze.starting_cell
     @width = @maze.dimensions[0] * 71 + 1
     @height = @maze.dimensions[1] * 71 + 1
-    @left = Math.round(@weight / 2)
+    @left = Math.round(@width / 2)
     @top = Math.round(@height / 2)
     @above_width = 2 * @width
     @above_height = 2 * @height
