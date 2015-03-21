@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="myCanvas" width="72" height="72"></canvas>
+    <script>
+      var canvas = document.getElementById('myCanvas');
+      var context = canvas.getContext('2d');
+
+      // draw black line expanding before white background:
+      // iterate over lengths of black line
+      for (var i = 0; i < 72; i += 2) {
+          var backgroundWidth = (72 - i) / 2;
+
+          context.beginPath();
+          context.moveTo(backgroundWidth, i / 2 + 0.5);
+          context.lineWidth = 1;
+          context.strokeStyle = 'black';
+          context.lineTo(i + backgroundWidth, i / 2 + 0.5);
+          context.stroke();
+      }
+
+      // draw white line expanding before black background:
+      // iterate over lengths of white line
+      for (var i = 0; i < 72; i += 2) {
+          var backgroundWidth = (72 - i) / 2;
+
+          context.beginPath();
+          context.moveTo(0, 36 + i / 2 + 0.5);
+          context.lineWidth = 1;
+          context.strokeStyle = 'black';
+          context.lineTo(backgroundWidth, 36 + i / 2 + 0.5);
+          context.stroke();
+
+          context.beginPath();
+          context.moveTo(backgroundWidth + i, 36 + i / 2 + 0.5);
+          context.lineWidth = 1;
+          context.strokeStyle = 'black';
+          context.lineTo(72, 36 + i / 2 + 0.5);
+          context.stroke();
+      }
+    </script>
+  </body>
+</html>
