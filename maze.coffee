@@ -140,45 +140,38 @@ class MazeUI3D
     )
 
   # TODO synchronize all movements!
-  # TODO restrict movement according to walls and floors
 
   go_up: ->
-    if @z + 1 >= @maze.dimensions[2]
-      return
-    @floors[@z].switchClass('floorHere', 'floorBelow', {duration: 1500})
-    @z += 1
-    @floors[@z].switchClass('floorAbove', 'floorHere', {duration: 1500})
+    if @maze.passage_exists([[@x, @y, @z], [@x, @y, @z + 1]])
+      @floors[@z].switchClass('floorHere', 'floorBelow', {duration: 1500})
+      @z += 1
+      @floors[@z].switchClass('floorAbove', 'floorHere', {duration: 1500})
 
   go_down: ->
-    if @z - 1 < 0
-      return
-    @floors[@z].switchClass('floorHere', 'floorAbove', {duration: 1500})
-    @z -= 1
-    @floors[@z].switchClass('floorBelow', 'floorHere', {duration: 1500})
+    if @maze.passage_exists([[@x, @y, @z - 1], [@x, @y, @z]])
+      @floors[@z].switchClass('floorHere', 'floorAbove', {duration: 1500})
+      @z -= 1
+      @floors[@z].switchClass('floorBelow', 'floorHere', {duration: 1500})
 
   go_backward: ->
-    if @y + 1 >= @maze.dimensions[1]
-      return
-    @y += 1
-    @move_pawn()
+    if @maze.passage_exists([[@x, @y, @z], [@x, @y + 1, @z]])
+      @y += 1
+      @move_pawn()
 
   go_forward: ->
-    if @y - 1 < 0
-      return
-    @y -= 1
-    @move_pawn()
+    if @maze.passage_exists([[@x, @y - 1, @z], [@x, @y, @z]])
+      @y -= 1
+      @move_pawn()
 
   go_right: ->
-    if @x + 1 >= @maze.dimensions[0]
-      return
-    @x += 1
-    @move_pawn()
+    if @maze.passage_exists([[@x, @y, @z], [@x + 1, @y, @z]])
+      @x += 1
+      @move_pawn()
 
   go_left: ->
-    if @x - 1 < 0
-      return
-    @x -= 1
-    @move_pawn()
+    if @maze.passage_exists([[@x - 1, @y, @z], [@x, @y, @z]])
+      @x -= 1
+      @move_pawn()
 
   move_pawn: ->
     @pawn.animate({
