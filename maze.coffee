@@ -71,6 +71,25 @@ class MazeUI3D
     # of .floorBelow, .floorAbove and .floorHere - but jQuery is not a great
     # help in manipulating CCS classes. >:-(
 
+    # make invisible grid on which the pawn moves
+    @grid = $('<div></div>').css({
+        width: @width
+        height: @height
+        position: 'relative',
+        top: @top
+        left: @left
+        zIndex: 10
+    })
+    @div.append(@grid)
+
+    # make pawn
+    @pawn = $('<img src=img/pawn.png></img>').css({
+       position: 'relative'
+       top: @y * 71
+       left: @x * 71
+    })
+    @grid.append(@pawn)
+
     # draw floors
     for z in [0...@maze.dimensions[2]]
       floor = $('<canvas></canvas>').attr({
@@ -104,17 +123,26 @@ class MazeUI3D
         floor.addClass('floorAbove')
 
     # attach key event handlers
-    # TODO this should only work when  player is in legal position
     # TODO arrow keys
     $(document).keyup((event) =>
       if event.which == 82 # R key
         @go_up()
       else if event.which == 70 # F key
         @go_down()
+      else if event.which == 37 # Left key
+        @go_left()
+      else if event.which == 38 # Up key
+        @go_forward()
+      else if event.which == 39 # Right key
+        @go_right()
+      else if event.which == 40 # Down key
+        @go_backward()
     )
 
+  # TODO synchronize all movements!
+  # TODO restrict movement according to walls and floors
+
   go_up: ->
-    # TODO wait until previous animation is finished
     if @z + 1 >= @maze.dimensions[2]
       return
     @floors[@z].switchClass('floorHere', 'floorBelow', {duration: 1500})
@@ -122,12 +150,41 @@ class MazeUI3D
     @floors[@z].switchClass('floorAbove', 'floorHere', {duration: 1500})
 
   go_down: ->
-    # TODO wait until previous animation is finished
     if @z - 1 < 0
       return
     @floors[@z].switchClass('floorHere', 'floorAbove', {duration: 1500})
     @z -= 1
     @floors[@z].switchClass('floorBelow', 'floorHere', {duration: 1500})
+
+  go_backward: ->
+    if @y + 1 >= @maze.dimensions[1]
+      return
+    @y += 1
+    @move_pawn()
+
+  go_forward: ->
+    if @y - 1 < 0
+      return
+    @y -= 1
+    @move_pawn()
+
+  go_right: ->
+    if @x + 1 >= @maze.dimensions[0]
+      return
+    @x += 1
+    @move_pawn()
+
+  go_left: ->
+    if @x - 1 < 0
+      return
+    @x -= 1
+    @move_pawn()
+
+  move_pawn: ->
+    @pawn.animate({
+        top: @y * 71
+        left: @x * 71
+    })
 
 root = exports ? this
 root.Maze = Maze
