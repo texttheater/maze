@@ -10,6 +10,9 @@ ear = (x) ->
 class Maze
   constructor: (@dimensions) ->
     @growing_tree()
+    @target_cell = (randrange(0, d) for d in @dimensions)
+    @target_cells = {}
+    @target_cells[@target_cell] = true
 
   neighbors: (cell) ->
     result = []
@@ -42,6 +45,9 @@ class Maze
 
   passage_exists: (passage) ->
     passage of @passages
+
+  is_target: (cell) ->
+    cell of @target_cells
 
 class MazeUI3D
   constructor: (@maze, @div) ->
@@ -101,7 +107,7 @@ class MazeUI3D
     pawnContext = @pawn[0].getContext('2d')
     pawnX = 71 / 2
     pawnY = 71 / 2
-    pawnRadius = 11
+    pawnRadius = 10
     pawnContext.beginPath()
     pawnContext.arc(pawnX, pawnY, pawnRadius, 0, 2 * Math.PI, false)
     pawnContext.fillStyle = '#800000'
@@ -118,6 +124,7 @@ class MazeUI3D
       for y in [-1...@maze.dimensions[1]]
         for x in [-1...@maze.dimensions[0]]
           if !@maze.passage_exists([[x, y, z], [x + 1, y, z]])
+            # paint right wall
             context.beginPath()
             context.moveTo(71.5 + 71 * x, 0.5 + 71 * y)
             context.lineTo(71.5 + 71 * x, 71.5 + 71 * y)
@@ -125,12 +132,24 @@ class MazeUI3D
             context.strokeStyle = 'black'
             context.stroke()
           if !@maze.passage_exists([[x, y, z], [x, y + 1, z]])
+            # paint bottom wall
             context.beginPath()
             context.moveTo(0.5 + 71 * x, 71.5 + 71 * y)
             context.lineTo(71.5 + 71 * x, 71.5 + 71 * y)
             context.lineWidth = 1
             context.strokeStyle = 'black'
             context.stroke()
+          if @maze.is_target([x, y, z])
+            # paint target
+            context.beginPath()
+            context.arc(71 * x + 71 / 2, 71 * y + 71 / 2, 21, 0, 2 * Math.PI, false)
+            context.lineWidth = 10
+            context.strokeStyle = 'black'
+            context.stroke()
+            context.beginPath()
+            context.arc(71 * x + 71 / 2, 71 * y + 71 / 2, 10, 0, 2 * Math.PI, false)
+            context.fillStyle = 'black'
+            context.fill()
           if @maze.passage_exists([[x, y, z], [x, y, z + 1]])
             # paint up arrow
             context.beginPath()
