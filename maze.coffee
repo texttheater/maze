@@ -83,11 +83,19 @@ class MazeUI3D
     @div.append(@grid)
 
     # make pawn
-    @pawn = $('<img src=img/pawn.png></img>').css({
+    @pawn = $('<canvas></canvas>').css({
        position: 'relative'
        top: @y * 71
        left: @x * 71
     })
+    pawnContext = @pawn[0].getContext('2d')
+    pawnX = 71 / 2
+    pawnY = 71 / 2
+    pawnRadius = 11
+    pawnContext.beginPath()
+    pawnContext.arc(pawnX, pawnY, pawnRadius, 0, 2 * Math.PI, false)
+    pawnContext.fillStyle = '#800000'
+    pawnContext.fill()
     @grid.append(@pawn)
 
     # draw floors
