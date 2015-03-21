@@ -47,37 +47,47 @@ class MazeUI3D
   constructor: (@maze, @div) ->
     # initialize attributes
     [@x, @y, @z] = @maze.starting_cell
-    @width = @maze.dimensions[0] * 71 + 1
-    @height = @maze.dimensions[1] * 71 + 1
-    @left = Math.round(@width / 2)
-    @top = Math.round(@height / 2)
-    @above_width = 2 * @width
-    @above_height = 2 * @height
-    @above_left = Math.round((@width - @above_width) / 2)
-    @above_top = Math.round((@height - @above_height) / 2)
-    @below_width = Math.round(2 / 3 * @width)
-    @below_height = Math.round(2 / 3 * @height)
-    @below_left = Math.round((@width - @below_width) / 2)
-    @below_top = Math.round((@height - @below_height) / 2)
+    width = @maze.dimensions[0] * 71 + 1
+    height = @maze.dimensions[1] * 71 + 1
+    @here = {
+        width: width
+        height: height
+        top: Math.round(width / 2)
+        left: Math.round(height / 2)
+        opacity: 1
+    }
+    @above = {
+        width: 2 * @here.width
+        height: 2 * @here.height
+        top: 0
+        left: 0
+        opacity: 0
+    }
+    width = Math.round(2 / 3 * @here.width)
+    height = Math.round(2 / 3 * @here.height)
+    @below = {
+        width: width
+        height: height
+        top: Math.round((@above.height - height) / 2)
+        left: Math.round((@above.width - width) / 2)
+        opacity: 0
+    }
     @floors = []
 
     # style board
     @div.css({
-        width: @above_width,
-        height: @above_height,
+        width: @above.width,
+        height: @above.height,
         position: 'relative'
     })
-    # TODO somehow need to set the CSS width/height/top/left attributes
-    # of .floorBelow, .floorAbove and .floorHere - but jQuery is not a great
-    # help in manipulating CCS classes. >:-(
 
     # make invisible grid on which the pawn moves
     @grid = $('<div></div>').css({
-        width: @width
-        height: @height
+        width: @here.width
+        height: @here.height
         position: 'relative',
-        top: @top
-        left: @left
+        top: @here.top
+        left: @here.left
         zIndex: 10
     })
     @div.append(@grid)
@@ -101,8 +111,8 @@ class MazeUI3D
     # draw floors
     for z in [0...@maze.dimensions[2]]
       floor = $('<canvas></canvas>').attr({
-          width: @width,
-          height: @height
+          width: @here.width
+          height: @here.height
       })
       context = floor[0].getContext('2d')
       for y in [-1...@maze.dimensions[1]]
@@ -141,16 +151,17 @@ class MazeUI3D
             context.stroke()
       @floors[z] = floor
       @div.append(floor)
-      floor.addClass('floor')
+      floor.css({
+          position: 'absolute'
+      })
       if z < @z
-        floor.addClass('floorBelow')
+        floor.css(@below)
       else if z == @z
-        floor.addClass('floorHere')
+        floor.css(@here)
       else
-        floor.addClass('floorAbove')
+        floor.css(@above)
 
     # attach key event handlers
-    # TODO arrow keys
     $(document).keyup((event) =>
       if event.which == 82 # R key
         @go_up()
@@ -170,15 +181,15 @@ class MazeUI3D
 
   go_up: ->
     if @maze.passage_exists([[@x, @y, @z], [@x, @y, @z + 1]])
-      @floors[@z].switchClass('floorHere', 'floorBelow', {duration: 1500})
+      @floors[@z].animate(@below, 1500)
       @z += 1
-      @floors[@z].switchClass('floorAbove', 'floorHere', {duration: 1500})
+      @floors[@z].animate(@here, 1500)
 
   go_down: ->
     if @maze.passage_exists([[@x, @y, @z - 1], [@x, @y, @z]])
-      @floors[@z].switchClass('floorHere', 'floorAbove', {duration: 1500})
+      @floors[@z].animate(@above, 1500)
       @z -= 1
-      @floors[@z].switchClass('floorBelow', 'floorHere', {duration: 1500})
+      @floors[@z].animate(@here, 1500)
 
   go_backward: ->
     if @maze.passage_exists([[@x, @y, @z], [@x, @y + 1, @z]])

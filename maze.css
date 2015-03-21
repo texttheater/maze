@@ -1,33 +1,3 @@
 div#maze {
 	margin: auto;
-	width: 428px;
-	height: 428px;
-}
-
-canvas.floor {
-	position: absolute;
-}
-
-canvas.floorHere {
-	top: 107px;
-	left: 107px;
-	width: 214px;
-	height: 214px;
-	opacity: 1;
-}
-
-canvas.floorBelow {
-	top: 143px;
-	left: 143px;
-	width: 143px;
-	height: 143px;
-	opacity: 0;
-}
-
-canvas.floorAbove {
-	top: 0;
-	left: 0;
-	width: 428px;
-	height: 428px;
-	opacity: 0;
 }
