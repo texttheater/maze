@@ -97,21 +97,40 @@ class MazeUI3D
           height: @height
       })
       context = floor[0].getContext('2d')
-      context.lineWidth = 1
-      context.strokeStyle = 'black'
       for y in [-1...@maze.dimensions[1]]
         for x in [-1...@maze.dimensions[0]]
           if !@maze.passage_exists([[x, y, z], [x + 1, y, z]])
             context.beginPath()
             context.moveTo(71.5 + 71 * x, 0.5 + 71 * y)
             context.lineTo(71.5 + 71 * x, 71.5 + 71 * y)
+            context.lineWidth = 1
+            context.strokeStyle = 'black'
             context.stroke()
           if !@maze.passage_exists([[x, y, z], [x, y + 1, z]])
             context.beginPath()
             context.moveTo(0.5 + 71 * x, 71.5 + 71 * y)
             context.lineTo(71.5 + 71 * x, 71.5 + 71 * y)
+            context.lineWidth = 1
+            context.strokeStyle = 'black'
             context.stroke()
-          # TODO paint arrows
+          if @maze.passage_exists([[x, y, z], [x, y, z + 1]])
+            # paint up arrow
+            context.beginPath()
+            context.moveTo(x * 71 + 27, y * 71 + 13)
+            context.lineTo(x * 71 + 35, y * 71 + 8)
+            context.lineTo(x * 71 + 43, y * 71 + 13)
+            context.lineWidth = 3
+            context.strokeStyle = 'grey'
+            context.stroke()
+          if @maze.passage_exists([[x, y, z - 1], [x, y, z]])
+            # paint down arrow
+            context.beginPath()
+            context.moveTo(x * 71 + 27, y * 71 + 57)
+            context.lineTo(x * 71 + 35, y * 71 + 62)
+            context.lineTo(x * 71 + 43, y * 71 + 57)
+            context.lineWidth = 3
+            context.strokeStyle = 'grey'
+            context.stroke()
       @floors[z] = floor
       @div.append(floor)
       floor.addClass('floor')
