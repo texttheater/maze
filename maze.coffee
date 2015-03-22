@@ -50,7 +50,12 @@ class Maze
     cell of @target_cells
 
 class MazeUI3D
-  constructor: (@maze, @div) ->
+  @msg =  {}
+  @msg['arrows'] = 'Use the arrow keys to move around the maze.'
+  @msg['updown'] = 'Press R to move a floor up, F to move a floor down.'
+  @msg['win'] = 'Congratulations! You mastered the maze!'
+
+  constructor: (@maze, @div, @messagebox) ->
     # initialize attributes
     [@x, @y, @z] = @maze.starting_cell
     width = @maze.dimensions[0] * 71 + 1
@@ -196,6 +201,9 @@ class MazeUI3D
         @go_backward()
     )
 
+    # messagebox
+    @messagebox.html('<p>' + MazeUI3D.msg['arrows'] + '</p>')
+
   # TODO synchronize all movements!
 
   go_up: ->
@@ -203,12 +211,14 @@ class MazeUI3D
       @floors[@z].animate(@below, 1500)
       @z += 1
       @floors[@z].animate(@here, 1500)
+      @update_msg()
 
   go_down: ->
     if @maze.passage_exists([[@x, @y, @z - 1], [@x, @y, @z]])
       @floors[@z].animate(@above, 1500)
       @z -= 1
       @floors[@z].animate(@here, 1500)
+      @update_msg()
 
   go_backward: ->
     if @maze.passage_exists([[@x, @y, @z], [@x, @y + 1, @z]])
@@ -235,6 +245,16 @@ class MazeUI3D
         top: @y * 71
         left: @x * 71
     })
+    @update_msg()
+
+  update_msg: ->
+    if @maze.is_target([@x, @y, @z])
+      msg = MazeUI3D.msg['win']
+    else if @maze.passage_exists([[@x, @y, @z], [@x, @y, @z + 1]]) or @maze.passage_exists([[@x, @y, @z - 1], [@x, @y, @z]])
+      msg = MazeUI3D.msg['updown']
+    else
+      msg = MazeUI3D.msg['arrows']
+    @messagebox.html('<p>' + msg + '</p>')
 
 root = exports ? this
 root.Maze = Maze
