@@ -55,9 +55,11 @@ class MazeUI3D
   @msg['updown'] = 'Press R to move a floor up, F to move a floor down.'
   @msg['win'] = 'Congratulations! You mastered the maze!'
 
-  constructor: (@maze, @div, @messagebox) ->
-    # initialize attributes
+  constructor: (@maze, frame, @messagebox) ->
+    # dynamic attributes 
     [@x, @y, @z] = @maze.starting_cell
+
+    # floor positions
     width = @maze.dimensions[0] * 71 + 1
     height = @maze.dimensions[1] * 71 + 1
     @here = {
@@ -83,17 +85,25 @@ class MazeUI3D
         left: Math.round((@above.width - width) / 2)
         opacity: 0
     }
-    @floors = []
 
-    # style board
-    @div.css({
-        width: @above.width,
-        height: @above.height,
+    # style frame
+    frame.css({
+        height: @here.height + 142
+        width: @above.width
         position: 'relative'
     })
 
+    # make container
+    container = $('<div></div>').css({
+        width: @above.width
+        height: @above.height
+        position: 'absolute'
+        top: (@here.height - @above.height + 142) / 2
+    })
+    frame.append(container)
+
     # make invisible grid on which the pawn moves
-    @grid = $('<div></div>').css({
+    grid = $('<div></div>').css({
         width: @here.width
         height: @here.height
         position: 'relative',
@@ -101,7 +111,7 @@ class MazeUI3D
         left: @here.left
         zIndex: 10
     })
-    @div.append(@grid)
+    container.append(grid)
 
     # make pawn
     @pawn = $('<canvas></canvas>').css({
@@ -117,9 +127,10 @@ class MazeUI3D
     pawnContext.arc(pawnX, pawnY, pawnRadius, 0, 2 * Math.PI, false)
     pawnContext.fillStyle = '#800000'
     pawnContext.fill()
-    @grid.append(@pawn)
+    grid.append(@pawn)
 
     # draw floors
+    @floors = []
     for z in [0...@maze.dimensions[2]]
       floor = $('<canvas></canvas>').attr({
           width: @here.width
@@ -174,7 +185,7 @@ class MazeUI3D
             context.strokeStyle = 'grey'
             context.stroke()
       @floors[z] = floor
-      @div.append(floor)
+      container.append(floor)
       floor.css({
           position: 'absolute'
       })
