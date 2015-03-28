@@ -8,4 +8,6 @@ div#maze {
 
 div#messagebox {
 	margin: auto;
-	text-align: center;}
+	text-align: center;
+	font-weight: bold;
+}

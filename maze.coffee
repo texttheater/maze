@@ -3,16 +3,25 @@ randrange = (min, max) ->
 
 choice = (seq) -> seq[randrange(0, seq.length)]
 
+# http://stackoverflow.com/a/11143926/792749
+array_equal = (a, b) ->
+  a.length is b.length and a.every (elem, i) -> elem is b[i]
+
 ear = (x) ->
   console.log(x)
   x
 
 class Maze
   constructor: (@dimensions) ->
+    # Generate maze using growing tree algorithm:
     @growing_tree()
-    @target_cell = (randrange(0, d) for d in @dimensions)
-    @target_cells = {}
-    @target_cells[@target_cell] = true
+    # Choose maximally distant cells for start and finish to make it
+    # interesting:
+    maxpath_info = @maxpath((0 for _ in @dimensions), [])
+    @start = maxpath_info.cell1
+    @finish = maxpath_info.cell2
+    @finishes = {}
+    @finishes[@finish] = true
 
   neighbors: (cell) ->
     result = []
@@ -22,10 +31,12 @@ class Maze
             cell[i + 1...]))
     result
 
+  # Growing Tree Algorithm
+  # http://weblog.jamisbuck.org/2011/1/27/maze-generation-growing-tree-algorithm
   growing_tree: ->
     @passages = {}
-    @starting_cell = (randrange(0, d) for d in @dimensions)
-    active_cells = [@starting_cell]
+    starting_cell = (randrange(0, d) for d in @dimensions)
+    active_cells = [starting_cell]
     visited_cells = {} # using joined tuples for keys
     until active_cells.length == 0
       cell = choice(active_cells)
@@ -34,7 +45,7 @@ class Maze
       if unvisited_neighbors.length > 0
         neighbor = choice(unvisited_neighbors)
         passage = [cell, neighbor]
-        @target = neighbor
+        target = neighbor
         passage.sort()
         @passages[passage] = true
         visited_cells[neighbor] = true
@@ -43,11 +54,52 @@ class Maze
         active_cells = active_cells.filter (c) -> c isnt cell
     return
 
+  # Implementation of the http://cs.stackexchange.com/a/11264 algorithm
+  # for finding the longest simple path in a tree in a single pass. This
+  # implementation returns not only the height and diameter (length of the
+  # longest simple path) of a subtree but also the two nodes at the ends of
+  # the longest path. The first argument is the root of the subtree to
+  # examine. Because our tree is undirected, the parent of that node (or an
+  # empty array, if none) needs to be passed as the second argument to
+  # identify the subtree.
+  # Returns an object with four fields: cell1 is the deepest node in the
+  # subtree, cell2 is the node with the maximal distance from cell1 in the
+  # subtree, diameter is that distance, height is the height of the subtree
+  # (i.e. the distance of cell from cell1).
+  maxpath: (cell, parent) ->
+    children = (neighbor for neighbor in @neighbors(cell) \
+        when not array_equal(neighbor, parent) \
+        and @passage_exists([neighbor, cell].sort()))
+    if children.length == 0
+      {cell1: cell, cell2: cell, height: 0, diameter: 0}
+    else
+      # Calculate heights, diameters and most distant nodes of children:
+      results = (@maxpath(child, cell) for child in children)
+      # Add dummy result in case there's only one:
+      results.push({cell1: null, cell2: null, height: 0, diameter: 0})
+      # Find the two highest subtrees:
+      results.sort((a, b) -> b.height - a.height)
+      highest = results[0]
+      second_highest = results[1]
+      # Find the subtree with the greatest diameter:
+      results.sort((a, b) -> b.diameter - a.diameter)
+      amplest = results[0]
+      if highest.height + second_highest.height > amplest.diameter
+        # The longest simple path passes through cell
+        {cell1: highest.cell1, cell2: second_highest.cell1, \
+            height: highest.height + 1, \
+            diameter: highest.height + second_highest.height + 2}
+      else
+        # The longest simple path does not pass through cell
+        {cell1: amplest.cell1, cell2: amplest.cell2, \
+            height: highest.height + 1, \
+            diameter: amplest.diameter}
+
   passage_exists: (passage) ->
     passage of @passages
 
   is_target: (cell) ->
-    cell of @target_cells
+    cell of @finishes
 
 class MazeUI3D
   @msg =  {}
@@ -57,7 +109,7 @@ class MazeUI3D
 
   constructor: (@maze, frame, @messagebox) ->
     # dynamic attributes 
-    [@x, @y, @z] = @maze.starting_cell
+    [@x, @y, @z] = @maze.start
 
     # floor positions
     width = @maze.dimensions[0] * 71 + 1
