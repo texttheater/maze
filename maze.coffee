@@ -214,15 +214,20 @@ class MazeUI3D
             context.stroke()
           if @maze.is_finish([x, y, z])
             # paint finish mark 
-            context.beginPath()
-            context.arc(71 * x + 71 / 2, 71 * y + 71 / 2, 21, 0, 2 * Math.PI, false)
-            context.lineWidth = 10
-            context.strokeStyle = 'black'
+            context.lineWidth = 1
+            context.strokeStyle = 'grey'
             context.stroke()
             context.beginPath()
-            context.arc(71 * x + 71 / 2, 71 * y + 71 / 2, 10, 0, 2 * Math.PI, false)
-            context.fillStyle = 'black'
-            context.fill()
+            context.arc(71 * x + 35, 71 * y + 35, 13.5, 0, 2 * Math.PI, false)
+            context.stroke()
+            context.beginPath()
+            context.moveTo(71 * x + 35, 71 * y + 15)
+            context.lineTo(71 * x + 35, 71 * y + 55)
+            context.stroke()
+            context.moveTo(71 * x + 15, 71 * y + 35)
+            context.lineTo(71 * x + 55, 71 * y + 35)
+            context.stroke()
+            context.strokeStyle = 'black'
           if @maze.passage_exists([[x, y, z], [x, y, z + 1]])
             # paint up arrow
             context.beginPath()
