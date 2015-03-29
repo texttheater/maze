@@ -172,13 +172,10 @@ class MazeUI3D
        left: @x * 71
     })
     pawnContext = @pawn[0].getContext('2d')
-    pawnX = 71 / 2
-    pawnY = 71 / 2
-    pawnRadius = 10
-    pawnContext.beginPath()
-    pawnContext.arc(pawnX, pawnY, pawnRadius, 0, 2 * Math.PI, false)
-    pawnContext.fillStyle = '#800000'
-    pawnContext.fill()
+    imageObj = new Image()
+    imageObj.onload = ->
+      pawnContext.drawImage(imageObj, 0, 0)
+    imageObj.src = 'img/dot.png'
     grid.append(@pawn)
 
     # draw floors
