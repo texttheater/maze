@@ -37,7 +37,8 @@ class Maze
     @passages = {}
     starting_cell = (randrange(0, d) for d in @dimensions)
     active_cells = [starting_cell]
-    visited_cells = {} # using joined tuples for keys
+    visited_cells = {}
+    visited_cells[starting_cell] = true
     until active_cells.length == 0
       cell = choice(active_cells)
       unvisited_neighbors =
