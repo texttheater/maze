@@ -52,7 +52,7 @@ class Maze
       if unvisited_neighbors.length > 0
         neighbor = choice(unvisited_neighbors)
         passage = [cell, neighbor]
-        target = neighbor
+        finish = neighbor
         passage.sort()
         @passages[passage] = true
         visited_cells[neighbor] = true
@@ -106,7 +106,7 @@ class Maze
   passage_exists: (passage) ->
     passage of @passages
 
-  is_target: (cell) ->
+  is_finish: (cell) ->
     cell of @finishes
 
 class MazeUI3D
@@ -212,8 +212,8 @@ class MazeUI3D
             context.lineWidth = 1
             context.strokeStyle = 'black'
             context.stroke()
-          if @maze.is_target([x, y, z])
-            # paint target
+          if @maze.is_finish([x, y, z])
+            # paint finish mark 
             context.beginPath()
             context.arc(71 * x + 71 / 2, 71 * y + 71 / 2, 21, 0, 2 * Math.PI, false)
             context.lineWidth = 10
@@ -319,7 +319,7 @@ class MazeUI3D
     })
 
   update_msg: ->
-    if @maze.is_target([@x, @y, @z])
+    if @maze.is_finish([@x, @y, @z])
       msg = MazeUI3D.msg['win']
     else if @maze.passage_exists([[@x, @y, @z], [@x, @y, @z + 1]]) or @maze.passage_exists([[@x, @y, @z - 1], [@x, @y, @z]])
       msg = MazeUI3D.msg['updown']
