@@ -234,7 +234,7 @@ class MazeUI3D
             context.moveTo(x * 71 + 27, y * 71 + 18)
             context.lineTo(x * 71 + 35, y * 71 + 13)
             context.lineTo(x * 71 + 43, y * 71 + 18)
-            context.lineWidth = 3
+            context.lineWidth = 2
             context.strokeStyle = 'grey'
             context.stroke()
           if @maze.passage_exists([[x, y, z - 1], [x, y, z]])
@@ -243,7 +243,7 @@ class MazeUI3D
             context.moveTo(x * 71 + 27, y * 71 + 53)
             context.lineTo(x * 71 + 35, y * 71 + 58)
             context.lineTo(x * 71 + 43, y * 71 + 53)
-            context.lineWidth = 3
+            context.lineWidth = 2
             context.strokeStyle = 'grey'
             context.stroke()
       @floors[z] = floor
