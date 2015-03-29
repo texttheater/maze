@@ -287,15 +287,15 @@ class MazeUI3D
 
   go_up: ->
     if @maze.passage_exists([[@x, @y, @z], [@x, @y, @z + 1]])
-      @floors[@z].animate(@below, 1500)
+      @floors[@z].animate(@below, 600)
       @z += 1
-      @floors[@z].animate(@here, 1500)
+      @floors[@z].animate(@here, 600)
 
   go_down: ->
     if @maze.passage_exists([[@x, @y, @z - 1], [@x, @y, @z]])
-      @floors[@z].animate(@above, 1500)
+      @floors[@z].animate(@above, 600)
       @z -= 1
-      @floors[@z].animate(@here, 1500)
+      @floors[@z].animate(@here, 600)
 
   go_backward: ->
     if @maze.passage_exists([[@x, @y, @z], [@x, @y + 1, @z]])
@@ -321,7 +321,7 @@ class MazeUI3D
     @pawn.animate({
         top: @y * 71
         left: @x * 71
-    })
+    }, 200)
 
   update_msg: ->
     if @maze.is_finish([@x, @y, @z])
