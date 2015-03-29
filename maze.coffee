@@ -16,7 +16,8 @@ class Maze
     # Generate maze using growing tree algorithm:
     @growing_tree()
     # Choose maximally distant cells for start and finish to make it
-    # interesting:
+    # interesting. # FIXME use double-Dijkstra instead of this simple
+    # algorithm - it also works for mazes with cycles
     maxpath_info = @maxpath((0 for _ in @dimensions), [])
     @start = maxpath_info.cell1
     @finish = maxpath_info.cell2
@@ -43,6 +44,11 @@ class Maze
       cell = choice(active_cells)
       unvisited_neighbors =
         (n for n in @neighbors(cell) when not (n of visited_cells))
+      # TODO Only using *unvisited* neighbors rules out cycles - but you would
+      # occasionally expect cycles in a "natural" maze. We could make picking a
+      # visited neighbor merely improbable instead of impossible. But we first
+      # need a more general longest-simple-path-finding algorithm (double
+      # Dijkstra).
       if unvisited_neighbors.length > 0
         neighbor = choice(unvisited_neighbors)
         passage = [cell, neighbor]
