@@ -76,8 +76,9 @@ class Maze
     else
       # Calculate heights, diameters and most distant nodes of children:
       results = (@maxpath(child, cell) for child in children)
-      # Add dummy result in case there's only one:
-      results.push({cell1: null, cell2: null, height: 0, diameter: 0})
+      # Add dummy result in case there's only one. The -1 is to compensate for
+      # the fact that we can only add one edge in the first case, not two.
+      results.push({cell1: cell, height: -1, diameter: 0})
       # Find the two highest subtrees:
       results.sort((a, b) -> b.height - a.height)
       highest = results[0]
@@ -85,7 +86,7 @@ class Maze
       # Find the subtree with the greatest diameter:
       results.sort((a, b) -> b.diameter - a.diameter)
       amplest = results[0]
-      if highest.height + second_highest.height > amplest.diameter
+      if highest.height + second_highest.height + 2 > amplest.diameter
         # The longest simple path passes through cell
         {cell1: highest.cell1, cell2: second_highest.cell1, \
             height: highest.height + 1, \
