@@ -249,16 +249,22 @@ class MazeUI3D
     $(document).keyup((event) =>
       if event.which == 82 # R key
         @go_up()
+        @update_msg()
       else if event.which == 70 # F key
         @go_down()
+        @update_msg()
       else if event.which == 37 # Left key
         @go_left()
+        @update_msg()
       else if event.which == 38 # Up key
         @go_forward()
+        @update_msg()
       else if event.which == 39 # Right key
         @go_right()
+        @update_msg()
       else if event.which == 40 # Down key
         @go_backward()
+        @update_msg()
     )
 
     # messagebox
@@ -271,14 +277,12 @@ class MazeUI3D
       @floors[@z].animate(@below, 1500)
       @z += 1
       @floors[@z].animate(@here, 1500)
-      @update_msg()
 
   go_down: ->
     if @maze.passage_exists([[@x, @y, @z - 1], [@x, @y, @z]])
       @floors[@z].animate(@above, 1500)
       @z -= 1
       @floors[@z].animate(@here, 1500)
-      @update_msg()
 
   go_backward: ->
     if @maze.passage_exists([[@x, @y, @z], [@x, @y + 1, @z]])
@@ -305,7 +309,6 @@ class MazeUI3D
         top: @y * 71
         left: @x * 71
     })
-    @update_msg()
 
   update_msg: ->
     if @maze.is_target([@x, @y, @z])
