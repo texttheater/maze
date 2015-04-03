@@ -152,7 +152,7 @@ class MazeUI3D
     # style frame
     frame.css({
         height: @here.height + 142
-        width: @above.width
+        width: @here.width + 142
         position: 'relative'
     })
 
@@ -162,6 +162,7 @@ class MazeUI3D
         height: @above.height
         position: 'absolute'
         top: (@here.height - @above.height + 142) / 2
+        left: (@here.width - @above.width + 142) / 2
     })
     frame.append(container)
 
