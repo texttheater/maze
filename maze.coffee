@@ -114,7 +114,7 @@ class MazeUI3D
   @msg =  {}
   @msg['arrows'] = 'Use the arrow keys to move around the maze.'
   @msg['updown'] = 'Press R to move a floor up, F to move a floor down.'
-  @msg['win'] = 'Congratulations! You mastered the maze!'
+  @msg['win'] = 'Yay! You mastered the maze!'
 
   constructor: (@maze, frame, @messagebox) ->
     # dynamic attributes
