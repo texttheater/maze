@@ -4,7 +4,7 @@ randrange = (min, max) ->
 choice = (seq) -> seq[randrange(0, seq.length)]
 
 # http://stackoverflow.com/a/11143926/792749
-array_equal = (a, b) ->
+arrayEqual = (a, b) ->
   a.length is b.length and a.every (elem, i) -> elem is b[i]
 
 ear = (x) ->
@@ -12,15 +12,16 @@ ear = (x) ->
   x
 
 class Maze
+
   constructor: (@dimensions) ->
     # Generate maze using growing tree algorithm:
-    @growing_tree()
+    @growingTree()
     # Choose maximally distant cells for start and finish to make it
     # interesting. # FIXME use double-Dijkstra instead of this simple
     # algorithm - it also works for mazes with cycles
-    maxpath_info = @maxpath((0 for _ in @dimensions), [])
-    @start = maxpath_info.cell1
-    @finish = maxpath_info.cell2
+    maxpathInfo = @maxpath((0 for _ in @dimensions), [])
+    @start = maxpathInfo.cell1
+    @finish = maxpathInfo.cell2
     @finishes = {}
     @finishes[@finish] = true
 
@@ -34,31 +35,31 @@ class Maze
 
   # Growing Tree Algorithm
   # http://weblog.jamisbuck.org/2011/1/27/maze-generation-growing-tree-algorithm
-  growing_tree: ->
+  growingTree: ->
     @passages = {}
-    starting_cell = (randrange(0, d) for d in @dimensions)
-    active_cells = [starting_cell]
-    visited_cells = {}
-    visited_cells[starting_cell] = true
-    until active_cells.length == 0
-      cell = choice(active_cells)
-      unvisited_neighbors =
-        (n for n in @neighbors(cell) when not (n of visited_cells))
+    startingCell = (randrange(0, d) for d in @dimensions)
+    activeCells = [startingCell]
+    visitedCells = {}
+    visitedCells[startingCell] = true
+    until activeCells.length == 0
+      cell = choice(activeCells)
+      unvisitedNeighbors =
+        (n for n in @neighbors(cell) when not (n of visitedCells))
       # TODO Only using *unvisited* neighbors rules out cycles - but you would
       # occasionally expect cycles in a "natural" maze. We could make picking a
       # visited neighbor merely improbable instead of impossible. But we first
       # need a more general longest-simple-path-finding algorithm (double
       # Dijkstra).
-      if unvisited_neighbors.length > 0
-        neighbor = choice(unvisited_neighbors)
+      if unvisitedNeighbors.length > 0
+        neighbor = choice(unvisitedNeighbors)
         passage = [cell, neighbor]
         finish = neighbor
         passage.sort()
         @passages[passage] = true
-        visited_cells[neighbor] = true
-        active_cells.push(neighbor)
+        visitedCells[neighbor] = true
+        activeCells.push(neighbor)
       else
-        active_cells = active_cells.filter (c) -> c isnt cell
+        activeCells = activeCells.filter (c) -> c isnt cell
     return
 
   # Implementation of the http://cs.stackexchange.com/a/11264 algorithm
@@ -75,8 +76,8 @@ class Maze
   # (i.e. the distance of cell from cell1).
   maxpath: (cell, parent) ->
     children = (neighbor for neighbor in @neighbors(cell) \
-        when not array_equal(neighbor, parent) \
-        and @passage_exists([neighbor, cell].sort()))
+        when not arrayEqual(neighbor, parent) \
+        and @passageExists([neighbor, cell].sort()))
     if children.length == 0
       {cell1: cell, cell2: cell, height: 0, diameter: 0}
     else
@@ -88,25 +89,25 @@ class Maze
       # Find the two highest subtrees:
       results.sort((a, b) -> b.height - a.height)
       highest = results[0]
-      second_highest = results[1]
+      secondHighest = results[1]
       # Find the subtree with the greatest diameter:
       results.sort((a, b) -> b.diameter - a.diameter)
       amplest = results[0]
-      if highest.height + second_highest.height + 2 > amplest.diameter
+      if highest.height + secondHighest.height + 2 > amplest.diameter
         # The longest simple path passes through cell
-        {cell1: highest.cell1, cell2: second_highest.cell1, \
+        {cell1: highest.cell1, cell2: secondHighest.cell1, \
             height: highest.height + 1, \
-            diameter: highest.height + second_highest.height + 2}
+            diameter: highest.height + secondHighest.height + 2}
       else
         # The longest simple path does not pass through cell
         {cell1: amplest.cell1, cell2: amplest.cell2, \
             height: highest.height + 1, \
             diameter: amplest.diameter}
 
-  passage_exists: (passage) ->
+  passageExists: (passage) ->
     passage of @passages
 
-  is_finish: (cell) ->
+  isFinish: (cell) ->
     cell of @finishes
 
 class MazeUI3D
@@ -198,14 +199,14 @@ class MazeUI3D
         for x in [-1...@maze.dimensions[0]]
           context.strokeStyle = 'black'
           context.lineWidth = 1
-          if !@maze.passage_exists([[x, y, z], [x + 1, y, z]])
+          if !@maze.passageExists([[x, y, z], [x + 1, y, z]])
             # paint right wall
             context.beginPath()
             context.moveTo(71.5 + 71 * x, 0.5 + 71 * y)
             context.lineTo(71.5 + 71 * x, 71.5 + 71 * y)
             context.lineWidth = 1
             context.stroke()
-          if !@maze.passage_exists([[x, y, z], [x, y + 1, z]])
+          if !@maze.passageExists([[x, y, z], [x, y + 1, z]])
             # paint bottom wall
             context.beginPath()
             context.moveTo(0.5 + 71 * x, 71.5 + 71 * y)
@@ -213,7 +214,7 @@ class MazeUI3D
             context.lineWidth = 1
             context.stroke()
           context.strokeStyle = 'grey'
-          if @maze.is_finish([x, y, z])
+          if @maze.isFinish([x, y, z])
             # paint finish mark 
             context.beginPath()
             context.arc(71 * x + 35, 71 * y + 35, 13.5, 0, 2 * Math.PI, false)
@@ -226,7 +227,7 @@ class MazeUI3D
             context.lineTo(71 * x + 55, 71 * y + 35)
             context.stroke()
           context.lineWidth = 2
-          if @maze.passage_exists([[x, y, z], [x, y, z + 1]])
+          if @maze.passageExists([[x, y, z], [x, y, z + 1]])
             # paint up arrow
             context.beginPath()
             context.moveTo(x * 71 + 27, y * 71 + 18)
@@ -234,7 +235,7 @@ class MazeUI3D
             context.lineTo(x * 71 + 43, y * 71 + 18)
             context.lineWidth = 2
             context.stroke()
-          if @maze.passage_exists([[x, y, z - 1], [x, y, z]])
+          if @maze.passageExists([[x, y, z - 1], [x, y, z]])
             # paint down arrow
             context.beginPath()
             context.moveTo(x * 71 + 27, y * 71 + 53)
@@ -257,94 +258,94 @@ class MazeUI3D
     # attach key event handlers
     $(document).keyup((event) =>
       if event.which == 82 # R key
-        @go_up()
-        @update_msg()
+        @goUp()
+        @updateMsg()
       else if event.which == 70 # F key
-        @go_down()
-        @update_msg()
+        @goDown()
+        @updateMsg()
       else if event.which == 37 # Left key
-        @go_left()
-        @update_msg()
+        @goLeft()
+        @updateMsg()
       else if event.which == 38 # Up key
-        @go_forward()
-        @update_msg()
+        @goForward()
+        @updateMsg()
       else if event.which == 39 # Right key
-        @go_right()
-        @update_msg()
+        @goRight()
+        @updateMsg()
       else if event.which == 40 # Down key
-        @go_backward()
-        @update_msg()
+        @goBackward()
+        @updateMsg()
     )
 
     # messagebox
     @messagebox.html('<p>' + MazeUI3D.msg['arrows'] + '</p>')
 
-  when_idle: (callback) =>
+  whenIdle: (callback) =>
     if @busy
-      setTimeout((=> @when_idle(callback)), 10)
+      setTimeout((=> @whenIdle(callback)), 10)
     else
       callback()
 
-  set_busy: =>
+  setBusy: =>
     @busy = true
 
-  set_idle: =>
+  setIdle: =>
     @busy = false
 
-  go_up: ->
-    @when_idle =>
-      if @maze.passage_exists([[@x, @y, @z], [@x, @y, @z + 1]])
-        @set_busy()
+  goUp: ->
+    @whenIdle =>
+      if @maze.passageExists([[@x, @y, @z], [@x, @y, @z + 1]])
+        @setBusy()
         @floors[@z].animate(@below, 600)
         @z += 1
-        @floors[@z].animate(@here, 600, @set_idle)
+        @floors[@z].animate(@here, 600, @setIdle)
 
-  go_down: ->
-    @when_idle =>
-      if @maze.passage_exists([[@x, @y, @z - 1], [@x, @y, @z]])
-        @set_busy()
+  goDown: ->
+    @whenIdle =>
+      if @maze.passageExists([[@x, @y, @z - 1], [@x, @y, @z]])
+        @setBusy()
         @floors[@z].animate(@above, 600)
         @z -= 1
-        @floors[@z].animate(@here, 600, @set_idle)
+        @floors[@z].animate(@here, 600, @setIdle)
 
-  go_backward: ->
-    @when_idle =>
-      if @maze.passage_exists([[@x, @y, @z], [@x, @y + 1, @z]])
-        @set_busy()
+  goBackward: ->
+    @whenIdle =>
+      if @maze.passageExists([[@x, @y, @z], [@x, @y + 1, @z]])
+        @setBusy()
         @y += 1
-        @move_pawn(@set_idle)
+        @movePawn(@setIdle)
 
-  go_forward: ->
-    @when_idle =>
-      if @maze.passage_exists([[@x, @y - 1, @z], [@x, @y, @z]])
-        @set_busy()
+  goForward: ->
+    @whenIdle =>
+      if @maze.passageExists([[@x, @y - 1, @z], [@x, @y, @z]])
+        @setBusy()
         @y -= 1
-        @move_pawn(@set_idle)
+        @movePawn(@setIdle)
 
-  go_right: ->
-    @when_idle =>
-      if @maze.passage_exists([[@x, @y, @z], [@x + 1, @y, @z]])
-        @set_busy()
+  goRight: ->
+    @whenIdle =>
+      if @maze.passageExists([[@x, @y, @z], [@x + 1, @y, @z]])
+        @setBusy()
         @x += 1
-        @move_pawn(@set_idle)
+        @movePawn(@setIdle)
 
-  go_left: ->
-    @when_idle =>
-      if @maze.passage_exists([[@x - 1, @y, @z], [@x, @y, @z]])
-        @set_busy()
+  goLeft: ->
+    @whenIdle =>
+      if @maze.passageExists([[@x - 1, @y, @z], [@x, @y, @z]])
+        @setBusy()
         @x -= 1
-        @move_pawn(@set_idle)
+        @movePawn(@setIdle)
 
-  move_pawn: (callback) ->
+  movePawn: (callback) ->
     @pawn.animate({
           top: @y * 71
           left: @x * 71
     }, 200, callback)
 
-  update_msg: ->
-    if @maze.is_finish([@x, @y, @z])
+  updateMsg: ->
+    if @maze.isFinish([@x, @y, @z])
       msg = MazeUI3D.msg['win']
-    else if @maze.passage_exists([[@x, @y, @z], [@x, @y, @z + 1]]) or @maze.passage_exists([[@x, @y, @z - 1], [@x, @y, @z]])
+    else if @maze.passageExists([[@x, @y, @z], [@x, @y, @z + 1]]) or @maze.passageExists([[@x, @y, @z - 1], [@x, @y, @z]])
       msg = MazeUI3D.msg['updown']
     else
       msg = MazeUI3D.msg['arrows']
