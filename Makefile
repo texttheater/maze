@@ -1,5 +1,5 @@
 maze.js : maze.coffee
 	coffee --compile $<
 
-deploy :
+deploy : maze.js
 	rsync -r * texttheater2@texttheater.net:~/httpdocs/maze
