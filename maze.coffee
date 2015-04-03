@@ -279,45 +279,67 @@ class MazeUI3D
     # messagebox
     @messagebox.html('<p>' + MazeUI3D.msg['arrows'] + '</p>')
 
-  # TODO synchronize all movements!
+  when_idle: (callback) =>
+    if @busy
+      setTimeout((=> @when_idle(callback)), 10)
+    else
+      callback()
+
+  set_busy: =>
+    @busy = true
+
+  set_idle: =>
+    @busy = false
 
   go_up: ->
-    if @maze.passage_exists([[@x, @y, @z], [@x, @y, @z + 1]])
-      @floors[@z].animate(@below, 600)
-      @z += 1
-      @floors[@z].animate(@here, 600)
+    @when_idle =>
+      if @maze.passage_exists([[@x, @y, @z], [@x, @y, @z + 1]])
+        @set_busy()
+        @floors[@z].animate(@below, 600)
+        @z += 1
+        @floors[@z].animate(@here, 600, @set_idle)
 
   go_down: ->
-    if @maze.passage_exists([[@x, @y, @z - 1], [@x, @y, @z]])
-      @floors[@z].animate(@above, 600)
-      @z -= 1
-      @floors[@z].animate(@here, 600)
+    @when_idle =>
+      if @maze.passage_exists([[@x, @y, @z - 1], [@x, @y, @z]])
+        @set_busy()
+        @floors[@z].animate(@above, 600)
+        @z -= 1
+        @floors[@z].animate(@here, 600, @set_idle)
 
   go_backward: ->
-    if @maze.passage_exists([[@x, @y, @z], [@x, @y + 1, @z]])
-      @y += 1
-      @move_pawn()
+    @when_idle =>
+      if @maze.passage_exists([[@x, @y, @z], [@x, @y + 1, @z]])
+        @set_busy()
+        @y += 1
+        @move_pawn(@set_idle)
 
   go_forward: ->
-    if @maze.passage_exists([[@x, @y - 1, @z], [@x, @y, @z]])
-      @y -= 1
-      @move_pawn()
+    @when_idle =>
+      if @maze.passage_exists([[@x, @y - 1, @z], [@x, @y, @z]])
+        @set_busy()
+        @y -= 1
+        @move_pawn(@set_idle)
 
   go_right: ->
-    if @maze.passage_exists([[@x, @y, @z], [@x + 1, @y, @z]])
-      @x += 1
-      @move_pawn()
+    @when_idle =>
+      if @maze.passage_exists([[@x, @y, @z], [@x + 1, @y, @z]])
+        @set_busy()
+        @x += 1
+        @move_pawn(@set_idle)
 
   go_left: ->
-    if @maze.passage_exists([[@x - 1, @y, @z], [@x, @y, @z]])
-      @x -= 1
-      @move_pawn()
+    @when_idle =>
+      if @maze.passage_exists([[@x - 1, @y, @z], [@x, @y, @z]])
+        @set_busy()
+        @x -= 1
+        @move_pawn(@set_idle)
 
-  move_pawn: ->
+  move_pawn: (callback) ->
     @pawn.animate({
-        top: @y * 71
-        left: @x * 71
-    }, 200)
+          top: @y * 71
+          left: @x * 71
+    }, 200, callback)
 
   update_msg: ->
     if @maze.is_finish([@x, @y, @z])
