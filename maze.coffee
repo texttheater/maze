@@ -117,8 +117,10 @@ class MazeUI3D
   @msg['win'] = 'Congratulations! You mastered the maze!'
 
   constructor: (@maze, frame, @messagebox) ->
-    # dynamic attributes 
+    # dynamic attributes
     [@x, @y, @z] = @maze.start
+    @busy = false
+    @queue = []
 
     # floor positions
     width = @maze.dimensions[0] * 71 + 1
@@ -281,10 +283,14 @@ class MazeUI3D
     @messagebox.html('<p>' + MazeUI3D.msg['arrows'] + '</p>')
 
   whenIdle: (callback) =>
+    @queue.push(callback)
+    @continue()
+
+  continue: =>
     if @busy
-      setTimeout((=> @whenIdle(callback)), 10)
+      setTimeout(@continue, 10)
     else
-      callback()
+      @queue.shift()()
 
   setBusy: =>
     @busy = true
