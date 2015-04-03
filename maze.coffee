@@ -179,7 +179,7 @@ class MazeUI3D
     container.append(grid)
 
     # make pawn
-    @pawn = $('<canvas></canvas>').css({
+    @pawn = $('<canvas width=70 height=70></canvas>').css({
        position: 'relative'
        top: @y * 71
        left: @x * 71
