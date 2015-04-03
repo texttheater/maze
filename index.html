@@ -3,6 +3,7 @@
   <head>
     <meta charset=utf-8 />
     <title>Maze</title>
+    <meta id=viewport name=viewport content="width=device-width">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel=stylesheet type=text/css>
     <link rel=stylesheet type=text/css href=maze.css>
   </head>
@@ -16,7 +17,7 @@
     <script src=maze.js></script>
     <script>
       var maze = new Maze([3, 3, 3]);
-      var maze_ui = new MazeUI3D(maze, $('#maze'), $('#messagebox'));
+      var maze_ui = new MazeUI3D(maze, $('#maze'), $('#messagebox'), $('#viewport'));
     </script>
   </body>
 </html>

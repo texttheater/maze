@@ -116,7 +116,7 @@ class MazeUI3D
   @msg['updown'] = 'Press R to move a floor up, F to move a floor down.'
   @msg['win'] = 'Yay! You mastered the maze!'
 
-  constructor: (@maze, frame, @messagebox) ->
+  constructor: (@maze, frame, @messagebox, viewport) ->
     # dynamic attributes
     [@x, @y, @z] = @maze.start
     @busy = false
@@ -148,6 +148,9 @@ class MazeUI3D
         left: Math.round((@above.width - width) / 2)
         opacity: 0
     }
+
+    # set viewport
+    viewport.attr('content', "width=#{@here.width + 142}");
 
     # style frame
     frame.css({
