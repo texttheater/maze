@@ -161,8 +161,6 @@ class MazeUI3D
 
     # make container
     container = $('<div></div>').css({
-        width: @above.width
-        height: @above.height
         position: 'absolute'
         top: (@here.height - @above.height + 142) / 2
         left: (@here.width - @above.width + 142) / 2
