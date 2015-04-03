@@ -196,13 +196,14 @@ class MazeUI3D
       context = floor[0].getContext('2d')
       for y in [-1...@maze.dimensions[1]]
         for x in [-1...@maze.dimensions[0]]
+          context.strokeStyle = 'black'
+          context.lineWidth = 1
           if !@maze.passage_exists([[x, y, z], [x + 1, y, z]])
             # paint right wall
             context.beginPath()
             context.moveTo(71.5 + 71 * x, 0.5 + 71 * y)
             context.lineTo(71.5 + 71 * x, 71.5 + 71 * y)
             context.lineWidth = 1
-            context.strokeStyle = 'black'
             context.stroke()
           if !@maze.passage_exists([[x, y, z], [x, y + 1, z]])
             # paint bottom wall
@@ -210,13 +211,10 @@ class MazeUI3D
             context.moveTo(0.5 + 71 * x, 71.5 + 71 * y)
             context.lineTo(71.5 + 71 * x, 71.5 + 71 * y)
             context.lineWidth = 1
-            context.strokeStyle = 'black'
             context.stroke()
+          context.strokeStyle = 'grey'
           if @maze.is_finish([x, y, z])
             # paint finish mark 
-            context.lineWidth = 1
-            context.strokeStyle = 'grey'
-            context.stroke()
             context.beginPath()
             context.arc(71 * x + 35, 71 * y + 35, 13.5, 0, 2 * Math.PI, false)
             context.stroke()
@@ -227,7 +225,7 @@ class MazeUI3D
             context.moveTo(71 * x + 15, 71 * y + 35)
             context.lineTo(71 * x + 55, 71 * y + 35)
             context.stroke()
-            context.strokeStyle = 'black'
+          context.lineWidth = 2
           if @maze.passage_exists([[x, y, z], [x, y, z + 1]])
             # paint up arrow
             context.beginPath()
@@ -235,7 +233,6 @@ class MazeUI3D
             context.lineTo(x * 71 + 35, y * 71 + 13)
             context.lineTo(x * 71 + 43, y * 71 + 18)
             context.lineWidth = 2
-            context.strokeStyle = 'grey'
             context.stroke()
           if @maze.passage_exists([[x, y, z - 1], [x, y, z]])
             # paint down arrow
@@ -244,7 +241,6 @@ class MazeUI3D
             context.lineTo(x * 71 + 35, y * 71 + 58)
             context.lineTo(x * 71 + 43, y * 71 + 53)
             context.lineWidth = 2
-            context.strokeStyle = 'grey'
             context.stroke()
       @floors[z] = floor
       container.append(floor)
