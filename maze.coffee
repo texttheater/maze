@@ -263,22 +263,22 @@ class MazeUI3D
     $(document).keyup((event) =>
       if event.which == 82 # R key
         @goUp()
-        @updateMsg()
+        @whenIdle(=>@updateMsg())
       else if event.which == 70 # F key
         @goDown()
-        @updateMsg()
+        @whenIdle(=> @updateMsg())
       else if event.which == 37 # Left key
         @goLeft()
-        @updateMsg()
+        @whenIdle(=> @updateMsg())
       else if event.which == 38 # Up key
         @goForward()
-        @updateMsg()
+        @whenIdle(=> @updateMsg())
       else if event.which == 39 # Right key
         @goRight()
-        @updateMsg()
+        @whenIdle(=> @updateMsg())
       else if event.which == 40 # Down key
         @goBackward()
-        @updateMsg()
+        @whenIdle(=> @updateMsg())
     )
 
     # messagebox
