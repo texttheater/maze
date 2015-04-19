@@ -363,12 +363,26 @@ class MazeUI3D
   updateStatus: ->
     if @maze.isFinish([@x, @y, @z])
       msg = MazeUI3D.msg['win']
-      @active = false
     else if @maze.passageExists([[@x, @y, @z], [@x, @y, @z + 1]]) or @maze.passageExists([[@x, @y, @z - 1], [@x, @y, @z]])
       msg = MazeUI3D.msg['updown']
     else
       msg = MazeUI3D.msg['arrows']
     @messagebox.html('<p>' + msg + '</p>')
+    if @maze.isFinish([@x, @y, @z])
+      @active = false
+      @messagebox.append($('<p></p>').append(@makeTweetActionLink()).append('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class=actionLink href=javascript:location.reload()>play again</a>'))
+
+  makeTweetActionLink: ->
+    $('<a></a>')
+        .attr({
+            class: 'actionLink'
+            target: '_blank'
+            href: 'https://twitter.com/share?text=' + encodeURIComponent(@makeTweetText())
+        })
+        .append('tweet')
+
+  makeTweetText: ->
+    "I solved a #{@maze.dimensions[0]}x#{@maze.dimensions[1]}x#{@maze.dimensions[2]} maze in #{@moves} moves at https://texttheater.net/maze/"
 
 root = exports ? this
 root.Maze = Maze

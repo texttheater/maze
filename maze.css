@@ -11,3 +11,10 @@ div#messagebox {
 	text-align: center;
 	font-size: 16pt;
 }
+
+a.actionLink {
+	color: red;
+	text-decoration: none;
+	font-variant: small-caps;
+	font-weight: bold;
+}
