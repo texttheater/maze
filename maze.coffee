@@ -154,16 +154,16 @@ class MazeUI3D
 
     # style frame
     frame.css({
-        height: @here.height + 142
-        width: @here.width + 142
+        height: @here.height + 71
+        width: @here.width + 71
         position: 'relative'
     })
 
     # make container
     container = $('<div></div>').css({
         position: 'absolute'
-        top: (@here.height - @above.height + 142) / 2
-        left: (@here.width - @above.width + 142) / 2
+        top: (@here.height - @above.height + 71) / 2
+        left: (@here.width - @above.width + 71) / 2
     })
     frame.append(container)
 
