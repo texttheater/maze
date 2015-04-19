@@ -121,6 +121,7 @@ class MazeUI3D
     [@x, @y, @z] = @maze.start
     @busy = false
     @queue = []
+    @moves = 0
 
     # floor positions
     width = @maze.dimensions[0] * 71 + 1
@@ -306,6 +307,7 @@ class MazeUI3D
         @setBusy()
         @floors[@z].animate(@below, 600)
         @z += 1
+        @moves++
         @floors[@z].animate(@here, 600, @setIdle)
 
   goDown: ->
@@ -314,6 +316,7 @@ class MazeUI3D
         @setBusy()
         @floors[@z].animate(@above, 600)
         @z -= 1
+        @moves++
         @floors[@z].animate(@here, 600, @setIdle)
 
   goBackward: ->
@@ -321,6 +324,7 @@ class MazeUI3D
       if @maze.passageExists([[@x, @y, @z], [@x, @y + 1, @z]])
         @setBusy()
         @y += 1
+        @moves++
         @movePawn(@setIdle)
 
   goForward: ->
@@ -328,6 +332,7 @@ class MazeUI3D
       if @maze.passageExists([[@x, @y - 1, @z], [@x, @y, @z]])
         @setBusy()
         @y -= 1
+        @moves++
         @movePawn(@setIdle)
 
   goRight: ->
@@ -335,6 +340,7 @@ class MazeUI3D
       if @maze.passageExists([[@x, @y, @z], [@x + 1, @y, @z]])
         @setBusy()
         @x += 1
+        @moves++
         @movePawn(@setIdle)
 
   goLeft: ->
@@ -342,6 +348,7 @@ class MazeUI3D
       if @maze.passageExists([[@x - 1, @y, @z], [@x, @y, @z]])
         @setBusy()
         @x -= 1
+        @moves++
         @movePawn(@setIdle)
 
   movePawn: (callback) ->
