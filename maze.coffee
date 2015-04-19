@@ -150,7 +150,7 @@ class MazeUI3D
     }
 
     # set viewport
-    viewport.attr('content', "width=#{@here.width + 142}");
+    #viewport.attr('content', "width=#{@here.width + 142}");
 
     # style frame
     frame.css({
