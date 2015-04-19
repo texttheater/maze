@@ -122,6 +122,7 @@ class MazeUI3D
     @busy = false
     @queue = []
     @moves = 0
+    @active = true
 
     # floor positions
     width = @maze.dimensions[0] * 71 + 1
@@ -262,24 +263,26 @@ class MazeUI3D
 
     # attach key event handlers
     $(document).keyup((event) =>
+      if !@active
+        return
       if event.which == 82 # R key
         @goUp()
-        @whenIdle(=>@updateMsg())
+        @whenIdle(=>@updateStatus())
       else if event.which == 70 # F key
         @goDown()
-        @whenIdle(=> @updateMsg())
+        @whenIdle(=> @updateStatus())
       else if event.which == 37 # Left key
         @goLeft()
-        @whenIdle(=> @updateMsg())
+        @whenIdle(=> @updateStatus())
       else if event.which == 38 # Up key
         @goForward()
-        @whenIdle(=> @updateMsg())
+        @whenIdle(=> @updateStatus())
       else if event.which == 39 # Right key
         @goRight()
-        @whenIdle(=> @updateMsg())
+        @whenIdle(=> @updateStatus())
       else if event.which == 40 # Down key
         @goBackward()
-        @whenIdle(=> @updateMsg())
+        @whenIdle(=> @updateStatus())
     )
 
     # messagebox
@@ -357,9 +360,10 @@ class MazeUI3D
           left: @x * 71
     }, 200, callback)
 
-  updateMsg: ->
+  updateStatus: ->
     if @maze.isFinish([@x, @y, @z])
       msg = MazeUI3D.msg['win']
+      @active = false
     else if @maze.passageExists([[@x, @y, @z], [@x, @y, @z + 1]]) or @maze.passageExists([[@x, @y, @z - 1], [@x, @y, @z]])
       msg = MazeUI3D.msg['updown']
     else
