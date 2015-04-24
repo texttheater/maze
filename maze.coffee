@@ -122,7 +122,6 @@ class MazeUI3D
     @busy = false
     @queue = []
     @moves = 0
-    @active = true
 
     # floor positions
     width = @maze.dimensions[0] * 71 + 1
@@ -262,31 +261,33 @@ class MazeUI3D
         floor.css(@above)
 
     # attach key event handlers
-    $(document).keyup((event) =>
-      if !@active
-        return
-      if event.which == 82 # R key
-        @goUp()
-        @whenIdle(=>@updateStatus())
-      else if event.which == 70 # F key
-        @goDown()
-        @whenIdle(=> @updateStatus())
-      else if event.which == 37 # Left key
-        @goLeft()
-        @whenIdle(=> @updateStatus())
-      else if event.which == 38 # Up key
-        @goForward()
-        @whenIdle(=> @updateStatus())
-      else if event.which == 39 # Right key
-        @goRight()
-        @whenIdle(=> @updateStatus())
-      else if event.which == 40 # Down key
-        @goBackward()
-        @whenIdle(=> @updateStatus())
-    )
+    $(document).keyup(@handleEvent)
 
     # messagebox
     @messagebox.html('<p>' + MazeUI3D.msg['arrows'] + '</p>')
+
+  handleEvent: (event) =>
+    if event.which == 82 # R key
+      @goUp()
+      @whenIdle(=>@updateStatus())
+    else if event.which == 70 # F key
+      @goDown()
+      @whenIdle(=> @updateStatus())
+    else if event.which == 37 # Left key
+      @goLeft()
+      @whenIdle(=> @updateStatus())
+    else if event.which == 38 # Up key
+      @goForward()
+      @whenIdle(=> @updateStatus())
+    else if event.which == 39 # Right key
+      @goRight()
+      @whenIdle(=> @updateStatus())
+    else if event.which == 40 # Down key
+      @goBackward()
+      @whenIdle(=> @updateStatus())
+
+  destroy: ->
+    $(document).off('keyup')
 
   whenIdle: (callback) =>
     @queue.push(callback)
@@ -369,8 +370,8 @@ class MazeUI3D
       msg = MazeUI3D.msg['arrows']
     @messagebox.html('<p>' + msg + '</p>')
     if @maze.isFinish([@x, @y, @z])
-      @active = false
       @messagebox.append($('<p></p>').append(@makeTweetActionLink()).append('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class=actionLink href=javascript:location.reload()>play again</a>'))
+      @destroy()
 
   makeTweetActionLink: ->
     $('<a></a>')
