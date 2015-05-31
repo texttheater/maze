@@ -203,12 +203,12 @@ class MazeUI3D
     })
 
     # make container
-    container = $('<div id=container></div>').css({
+    @container = $('<div id=container></div>').css({
         position: 'absolute'
         top: (@here.height - @above.height + 71) / 2
         left: (@here.width - @above.width + 71) / 2
     })
-    frame.append(container)
+    frame.append(@container)
 
     # make invisible grid on which the pawn moves
     grid = $('<div id=grid></div>').css({
@@ -219,7 +219,7 @@ class MazeUI3D
         left: @here.left
         zIndex: 10
     })
-    container.append(grid)
+    @container.append(grid)
 
     # make pawn
     @pawn = $('<canvas id=pawn width=70 height=70></canvas>').css({
@@ -295,7 +295,7 @@ class MazeUI3D
             context.lineWidth = 2
             context.stroke()
       @floors[z] = floor
-      container.append(floor)
+      @container.append(floor)
       floor.css({
           position: 'absolute'
       })
@@ -335,6 +335,7 @@ class MazeUI3D
 
   destroy: ->
     $(document).off('keyup')
+    @container.remove()
 
   whenIdle: (callback) =>
     @queue.push(callback)
