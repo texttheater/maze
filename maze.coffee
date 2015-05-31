@@ -118,10 +118,18 @@ class RandomMaze extends Maze
             diameter: amplest.diameter}
 
 class LevelChooser extends Maze
+  @waitingPosition = {
+      3: [1, 3, 0]
+      4: [1, 3, 0]
+      5: [0, 2, 0]
+      6: [3, 2, 0]
+      7: [1, 0, 0]
+      8: [1, 2, 0]
+  }
 
-  constructor: ->
+  constructor: (@nextLevel=3) ->
     super([4, 4, 1])
-    @start = [1, 3, 0]
+    @start = LevelChooser.waitingPosition[@nextLevel]
     # row 0
     @passages[[[0, 0, 0], [1, 0, 0]]] = true
     @passages[[[1, 0, 0], [2, 0, 0]]] = true
