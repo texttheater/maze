@@ -129,7 +129,7 @@ class LevelChooser extends Maze
 
   constructor: (@nextLevel=3) ->
     super([4, 4, 1])
-    @start = LevelChooser.waitingPosition[@nextLevel]
+    @start = LevelChooser.waitingPosition[@nextLevel] || LevelChooser.waitingPosition[8]
     # row 0
     @passages[[[0, 0, 0], [1, 0, 0]]] = true
     @passages[[[1, 0, 0], [2, 0, 0]]] = true
@@ -430,7 +430,7 @@ class MazeUI3D
   updateStatus: ->
     @messagebox.html('<p>' + @currentMessage() + '</p>')
     if @maze.isFinish([@x, @y, @z])
-      @messagebox.append($('<p></p>').append(@makeTweetActionLink()).append('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class=actionLink href=javascript:location.reload()>play again</a>'))
+      @messagebox.append($('<p></p>').append(@makeTweetActionLink()).append('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;').append(@makePlayAgainActionLink()))
       @disable()
     if [@x, @y, @z] of @maze.portals
       level = @maze.portals[[@x, @y, @z]]
@@ -447,6 +447,18 @@ class MazeUI3D
                 @makeTweetText())
         })
         .append('tweet')
+
+  makePlayAgainActionLink: =>
+    $('<a></a>')
+        .attr({
+            class: 'actionLink'
+            href: '#'
+        }).append('play again').click(=> @playAgain())
+
+  playAgain: =>
+    @destroy()
+    new LevelChooserUI(new LevelChooser(@maze.dimensions[0] + 1), @frame,
+        @messagebox, @viewport)
 
   makeTweetText: ->
     "I solved a #{@maze.dimensions[0]}x#{@maze.dimensions[1]}x#{@maze.dimensions[2]} maze in #{@moves} moves at https://texttheater.net/maze/"
