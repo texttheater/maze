@@ -443,7 +443,13 @@ class MazeUI3D
   makeTweetText: ->
     "I solved a #{@maze.dimensions[0]}x#{@maze.dimensions[1]}x#{@maze.dimensions[2]} maze in #{@moves} moves at https://texttheater.net/maze/"
 
+class LevelChooserUI extends MazeUI3D
+
+  currentMessage: ->
+    'Welcome to the maze! Use the arrow keys to move around and choose a level'
+
 root = exports ? this
 root.RandomMaze = RandomMaze
 root.MazeUI3D = MazeUI3D
 root.LevelChooser = LevelChooser
+root.LevelChooserUI = LevelChooserUI

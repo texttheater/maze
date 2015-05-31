@@ -16,9 +16,8 @@
     <script src=jquery-ui.min.js></script>
     <script src=maze.js></script>
     <script>
-      //var maze = new RandomMaze([3, 3, 3]);
       var maze = new LevelChooser();
-      var maze_ui = new MazeUI3D(maze, $('#maze'), $('#messagebox'), $('#viewport'));
+      var maze_ui = new LevelChooserUI(maze, $('#maze'), $('#messagebox'), $('#viewport'));
     </script>
   </body>
 </html>
