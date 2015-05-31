@@ -189,7 +189,7 @@ class MazeUI3D
     imageObj = new Image()
     imageObj.onload = ->
       pawnContext.drawImage(imageObj, 0, 0)
-    imageObj.src = 'img/dot.png'
+    imageObj.src = 'dot.png'
     grid.append(@pawn)
 
     # draw floors
