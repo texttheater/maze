@@ -238,8 +238,8 @@ class MazeUI3D
     @floors = []
     for z in [0...@maze.dimensions[2]]
       floor = $('<canvas class=floor></canvas>').attr({
-          width: ear(@here.width)
-          height: ear(@here.height)
+          width: @here.width
+          height: @here.height
       })
       context = floor[0].getContext('2d')
       context.font = "50px 'Slabo 27px'"
@@ -248,14 +248,14 @@ class MazeUI3D
         for x in [-1...@maze.dimensions[0]]
           context.strokeStyle = 'black'
           context.lineWidth = 1
-          if ear(!@maze.passageExists([[x, y, z], [x + 1, y, z]]))
+          if !@maze.passageExists([[x, y, z], [x + 1, y, z]])
             # paint right wall
             context.beginPath()
             context.moveTo(71.5 + 71 * x, 0.5 + 71 * y)
             context.lineTo(71.5 + 71 * x, 71.5 + 71 * y)
             context.lineWidth = 1
             context.stroke()
-          if ear(!@maze.passageExists([[x, y, z], [x, y + 1, z]]))
+          if !@maze.passageExists([[x, y, z], [x, y + 1, z]])
             # paint bottom wall
             context.beginPath()
             context.moveTo(0.5 + 71 * x, 71.5 + 71 * y)
@@ -299,7 +299,6 @@ class MazeUI3D
       floor.css({
           position: 'absolute'
       })
-      console.log(z, @z)
       if z < @z
         floor.css(@below)
       else if z == @z
