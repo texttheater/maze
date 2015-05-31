@@ -158,7 +158,7 @@ class MazeUI3D
   @msg['updown'] = 'Press R to move a floor up, F to move a floor down.'
   @msg['win'] = 'Yay! You mastered the maze!'
 
-  constructor: (@maze, frame, @messagebox, viewport) ->
+  constructor: (@maze, @frame, @messagebox, @viewport) ->
     # dynamic attributes
     [@x, @y, @z] = @maze.start
     @busy = false
@@ -193,10 +193,10 @@ class MazeUI3D
     }
 
     # set viewport
-    #viewport.attr('content', "width=#{@here.width + 142}");
+    #@viewport.attr('content', "width=#{@here.width + 142}");
 
     # style frame
-    frame.css({
+    @frame.css({
         height: @here.height + 71
         width: @here.width + 71
         position: 'relative'
@@ -208,7 +208,7 @@ class MazeUI3D
         top: (@here.height - @above.height + 71) / 2
         left: (@here.width - @above.width + 71) / 2
     })
-    frame.append(@container)
+    @frame.append(@container)
 
     # make invisible grid on which the pawn moves
     grid = $('<div id=grid></div>').css({
@@ -423,15 +423,18 @@ class MazeUI3D
       @messagebox.append($('<p></p>').append(@makeTweetActionLink()).append('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class=actionLink href=javascript:location.reload()>play again</a>'))
       @disable()
     if [@x, @y, @z] of @maze.portals
-      # TODO teleport into a maze of the chosen level
+      level = @maze.portals[[@x, @y, @z]]
       @destroy()
+      new MazeUI3D(new RandomMaze([level, level, level]), @frame, @messagebox,
+          @viewport)
 
   makeTweetActionLink: ->
     $('<a></a>')
         .attr({
             class: 'actionLink'
             target: '_blank'
-            href: 'https://twitter.com/share?text=' + encodeURIComponent(@makeTweetText())
+            href: 'https://twitter.com/share?text=' + encodeURIComponent(
+                @makeTweetText())
         })
         .append('tweet')
 
