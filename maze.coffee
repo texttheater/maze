@@ -14,16 +14,10 @@ ear = (x) ->
 class Maze
 
   constructor: (@dimensions) ->
-    # Generate maze using growing tree algorithm:
-    @growingTree()
-    # Choose maximally distant cells for start and finish to make it
-    # interesting. # FIXME use double-Dijkstra instead of this simple
-    # algorithm - it also works for mazes with cycles
-    maxpathInfo = @maxpath((0 for _ in @dimensions), [])
-    @start = maxpathInfo.cell1
-    @finish = maxpathInfo.cell2
+    @passages = {}
+    @portals = {}
     @finishes = {}
-    @finishes[@finish] = true
+    @start = (0 for _ in @dimensions)
 
   neighbors: (cell) ->
     result = []
@@ -33,10 +27,29 @@ class Maze
             cell[i + 1...]))
     result
 
+  passageExists: (passage) ->
+    passage of @passages
+
+  isFinish: (cell) ->
+    cell of @finishes
+
+class RandomMaze extends Maze
+
+  constructor: (dimensions) ->
+    super(dimensions)
+    # Generate maze using growing tree algorithm:
+    @growingTree()
+    # Choose maximally distant cells for start and finish to make it
+    # interesting. # FIXME use double-Dijkstra instead of this simple
+    # algorithm - it also works for mazes with cycles
+    maxpathInfo = @maxpath((0 for _ in @dimensions), [])
+    @start = maxpathInfo.cell1
+    @finish = maxpathInfo.cell2
+    @finishes[@finish] = true
+
   # Growing Tree Algorithm
   # http://weblog.jamisbuck.org/2011/1/27/maze-generation-growing-tree-algorithm
   growingTree: ->
-    @passages = {}
     startingCell = (randrange(0, d) for d in @dimensions)
     activeCells = [startingCell]
     visitedCells = {}
@@ -104,11 +117,40 @@ class Maze
             height: highest.height + 1, \
             diameter: amplest.diameter}
 
-  passageExists: (passage) ->
-    passage of @passages
+class LevelChooser extends Maze
 
-  isFinish: (cell) ->
-    cell of @finishes
+  constructor: ->
+    super([4, 4, 1])
+    @start = [1, 3, 0]
+    # row 0
+    @passages[[[0, 0, 0], [1, 0, 0]]] = true
+    @passages[[[1, 0, 0], [2, 0, 0]]] = true
+    @passages[[[2, 0, 0], [3, 0, 0]]] = true
+    # row 0 to row 1
+    @passages[[[1, 0, 0], [1, 1, 0]]] = true
+    # row 1
+    @passages[[[1, 1, 0], [2, 1, 0]]] = true
+    @passages[[[2, 1, 0], [3, 1, 0]]] = true
+    # row 1 to row 2
+    @passages[[[0, 1, 0], [0, 2, 0]]] = true
+    @passages[[[2, 1, 0], [2, 2, 0]]] = true
+    @passages[[[3, 1, 0], [3, 2, 0]]] = true
+    # row 2
+    @passages[[[0, 2, 0], [1, 2, 0]]] = true
+    @passages[[[1, 2, 0], [2, 2, 0]]] = true
+    # row 2 to row 3
+    @passages[[[1, 2, 0], [1, 3, 0]]] = true
+    @passages[[[3, 2, 0], [3, 3, 0]]] = true
+    # row 3
+    @passages[[[0, 3, 0], [1, 3, 0]]] = true
+    @passages[[[1, 3, 0], [2, 3, 0]]] = true
+    # portals to levels
+    @portals[[0, 3, 0]] = 3
+    @portals[[2, 3, 0]] = 4
+    @portals[[0, 1, 0]] = 5
+    @portals[[3, 3, 0]] = 6
+    @portals[[0, 0, 0]] = 7
+    @portals[[3, 0, 0]] = 8
 
 class MazeUI3D
   @msg =  {}
@@ -161,7 +203,7 @@ class MazeUI3D
     })
 
     # make container
-    container = $('<div></div>').css({
+    container = $('<div id=container></div>').css({
         position: 'absolute'
         top: (@here.height - @above.height + 71) / 2
         left: (@here.width - @above.width + 71) / 2
@@ -169,7 +211,7 @@ class MazeUI3D
     frame.append(container)
 
     # make invisible grid on which the pawn moves
-    grid = $('<div></div>').css({
+    grid = $('<div id=grid></div>').css({
         width: @here.width
         height: @here.height
         position: 'relative',
@@ -180,7 +222,7 @@ class MazeUI3D
     container.append(grid)
 
     # make pawn
-    @pawn = $('<canvas width=70 height=70></canvas>').css({
+    @pawn = $('<canvas id=pawn width=70 height=70></canvas>').css({
        position: 'relative'
        top: @y * 71
        left: @x * 71
@@ -195,23 +237,25 @@ class MazeUI3D
     # draw floors
     @floors = []
     for z in [0...@maze.dimensions[2]]
-      floor = $('<canvas></canvas>').attr({
-          width: @here.width
-          height: @here.height
+      floor = $('<canvas class=floor></canvas>').attr({
+          width: ear(@here.width)
+          height: ear(@here.height)
       })
       context = floor[0].getContext('2d')
+      context.font = "50px 'Slabo 27px'"
+      context.fillStyle = 'grey'
       for y in [-1...@maze.dimensions[1]]
         for x in [-1...@maze.dimensions[0]]
           context.strokeStyle = 'black'
           context.lineWidth = 1
-          if !@maze.passageExists([[x, y, z], [x + 1, y, z]])
+          if ear(!@maze.passageExists([[x, y, z], [x + 1, y, z]]))
             # paint right wall
             context.beginPath()
             context.moveTo(71.5 + 71 * x, 0.5 + 71 * y)
             context.lineTo(71.5 + 71 * x, 71.5 + 71 * y)
             context.lineWidth = 1
             context.stroke()
-          if !@maze.passageExists([[x, y, z], [x, y + 1, z]])
+          if ear(!@maze.passageExists([[x, y, z], [x, y + 1, z]]))
             # paint bottom wall
             context.beginPath()
             context.moveTo(0.5 + 71 * x, 71.5 + 71 * y)
@@ -231,6 +275,8 @@ class MazeUI3D
             context.moveTo(71 * x + 15, 71 * y + 35)
             context.lineTo(71 * x + 55, 71 * y + 35)
             context.stroke()
+          if [x, y, z] of @maze.portals
+            context.fillText(@maze.portals[[x, y, z]], 71 * x + 20, 71 * y + 55)
           context.lineWidth = 2
           if @maze.passageExists([[x, y, z], [x, y, z + 1]])
             # paint up arrow
@@ -253,6 +299,7 @@ class MazeUI3D
       floor.css({
           position: 'absolute'
       })
+      console.log(z, @z)
       if z < @z
         floor.css(@below)
       else if z == @z
@@ -372,6 +419,9 @@ class MazeUI3D
     if @maze.isFinish([@x, @y, @z])
       @messagebox.append($('<p></p>').append(@makeTweetActionLink()).append('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class=actionLink href=javascript:location.reload()>play again</a>'))
       @destroy()
+    if [@x, @y, @z] of @maze.portals
+      # TODO teleport into a maze of the chosen level
+      @destroy()
 
   makeTweetActionLink: ->
     $('<a></a>')
@@ -386,5 +436,6 @@ class MazeUI3D
     "I solved a #{@maze.dimensions[0]}x#{@maze.dimensions[1]}x#{@maze.dimensions[2]} maze in #{@moves} moves at https://texttheater.net/maze/"
 
 root = exports ? this
-root.Maze = Maze
+root.RandomMaze = RandomMaze
 root.MazeUI3D = MazeUI3D
+root.LevelChooser = LevelChooser
