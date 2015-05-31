@@ -10,6 +10,11 @@ div#messagebox {
 	margin: auto;
 	text-align: center;
 	font-size: 16pt;
+	display: none;
+}
+
+div.container{
+	display: none;
 }
 
 a.actionLink {

@@ -211,7 +211,7 @@ class MazeUI3D
     })
 
     # make container
-    @container = $('<div id=container></div>').css({
+    @container = $('<div class=container></div>').css({
         position: 'absolute'
         top: (@here.height - @above.height + 71) / 2
         left: (@here.width - @above.width + 71) / 2
@@ -219,7 +219,7 @@ class MazeUI3D
     @frame.append(@container)
 
     # make invisible grid on which the pawn moves
-    grid = $('<div id=grid></div>').css({
+    grid = $('<div class=grid></div>').css({
         width: @here.width
         height: @here.height
         position: 'relative',
@@ -230,7 +230,7 @@ class MazeUI3D
     @container.append(grid)
 
     # make pawn
-    @pawn = $('<canvas id=pawn width=70 height=70></canvas>').css({
+    @pawn = $('<canvas class=pawn width=70 height=70></canvas>').css({
        position: 'relative'
        top: @y * 71
        left: @x * 71
@@ -320,6 +320,10 @@ class MazeUI3D
     # message box
     @updateStatus()
 
+    # show the whole thing
+    @container.fadeIn(600)
+    @messagebox.fadeIn(600)
+
   handleEvent: (event) =>
     if event.which == 82 # R key
       @goUp()
@@ -343,9 +347,16 @@ class MazeUI3D
   disable: ->
     $(document).off('keyup')
 
-  destroy: ->
+  destroy: (complete=$.noop) ->
     @disable()
-    @container.remove()
+    @container.fadeOut(600)
+    @messagebox.fadeOut(600)
+    @container.promise().done(=>
+        @messagebox.promise().done(=>
+            @container.remove()
+            complete()
+        )
+    )
 
   whenIdle: (callback) =>
     @queue.push(callback)
@@ -434,9 +445,11 @@ class MazeUI3D
       @disable()
     if [@x, @y, @z] of @maze.portals
       level = @maze.portals[[@x, @y, @z]]
-      @destroy()
-      new MazeUI3D(new RandomMaze([level, level, level]), @frame, @messagebox,
-          @viewport)
+      @destroy(=>
+          new MazeUI3D(new RandomMaze([level, level, level]), @frame,
+              @messagebox,
+              @viewport)
+      )
 
   makeTweetActionLink: ->
     $('<a></a>')
@@ -456,9 +469,10 @@ class MazeUI3D
         }).append('play again').click(=> @playAgain())
 
   playAgain: =>
-    @destroy()
-    new LevelChooserUI(new LevelChooser(@maze.dimensions[0] + 1), @frame,
-        @messagebox, @viewport)
+    @destroy(=>
+        new LevelChooserUI(new LevelChooser(@maze.dimensions[0] + 1), @frame,
+            @messagebox, @viewport)
+    )
 
   makeTweetText: ->
     "I solved a #{@maze.dimensions[0]}x#{@maze.dimensions[1]}x#{@maze.dimensions[2]} maze in #{@moves} moves at https://texttheater.net/maze/"
