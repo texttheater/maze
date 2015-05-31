@@ -332,8 +332,11 @@ class MazeUI3D
       @goBackward()
       @whenIdle(=> @updateStatus())
 
-  destroy: ->
+  disable: ->
     $(document).off('keyup')
+
+  destroy: ->
+    @disable()
     @container.remove()
 
   whenIdle: (callback) =>
@@ -418,7 +421,7 @@ class MazeUI3D
     @messagebox.html('<p>' + msg + '</p>')
     if @maze.isFinish([@x, @y, @z])
       @messagebox.append($('<p></p>').append(@makeTweetActionLink()).append('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class=actionLink href=javascript:location.reload()>play again</a>'))
-      @destroy()
+      @disable()
     if [@x, @y, @z] of @maze.portals
       # TODO teleport into a maze of the chosen level
       @destroy()
