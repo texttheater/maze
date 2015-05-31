@@ -309,8 +309,8 @@ class MazeUI3D
     # attach key event handlers
     $(document).keyup(@handleEvent)
 
-    # messagebox
-    @messagebox.html('<p>' + MazeUI3D.msg['arrows'] + '</p>')
+    # message box
+    @updateStatus()
 
   handleEvent: (event) =>
     if event.which == 82 # R key
@@ -411,14 +411,16 @@ class MazeUI3D
           left: @x * 71
     }, 200, callback)
 
-  updateStatus: ->
+  currentMessage: ->
     if @maze.isFinish([@x, @y, @z])
-      msg = MazeUI3D.msg['win']
+      MazeUI3D.msg['win']
     else if @maze.passageExists([[@x, @y, @z], [@x, @y, @z + 1]]) or @maze.passageExists([[@x, @y, @z - 1], [@x, @y, @z]])
-      msg = MazeUI3D.msg['updown']
+      MazeUI3D.msg['updown']
     else
-      msg = MazeUI3D.msg['arrows']
-    @messagebox.html('<p>' + msg + '</p>')
+      MazeUI3D.msg['arrows']
+
+  updateStatus: ->
+    @messagebox.html('<p>' + @currentMessage() + '</p>')
     if @maze.isFinish([@x, @y, @z])
       @messagebox.append($('<p></p>').append(@makeTweetActionLink()).append('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class=actionLink href=javascript:location.reload()>play again</a>'))
       @disable()
