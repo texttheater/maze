@@ -9,7 +9,8 @@ Elementary
 
 Polishing
 * layout ✔
-* nice user guidance ⌛
-* mobile
+* nice user guidance ✔
 * social media integration ⌛
+* keyboard shortcuts for action links
 * publishing
+* mobile
