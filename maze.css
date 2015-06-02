@@ -18,12 +18,12 @@ div.container{
 }
 
 a.actionLink {
-	color: red;
+	color: grey;
 	text-decoration: none;
 	font-variant: small-caps;
 	font-weight: bold;
 }
 
 span.shortcut {
-	color: black;
+	color: red;
 }
