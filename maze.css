@@ -23,3 +23,7 @@ a.actionLink {
 	font-variant: small-caps;
 	font-weight: bold;
 }
+
+span.shortcut {
+	color: black;
+}

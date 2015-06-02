@@ -172,6 +172,7 @@ class MazeUI3D
     @busy = false
     @queue = []
     @moves = 0
+    @status = 'playing'
 
     # floor positions
     width = @maze.dimensions[0] * 71 + 1
@@ -325,24 +326,30 @@ class MazeUI3D
     @messagebox.fadeIn(600)
 
   handleEvent: (event) =>
-    if event.which == 82 # R key
-      @goUp()
-      @whenIdle(=>@updateStatus())
-    else if event.which == 70 # F key
-      @goDown()
-      @whenIdle(=> @updateStatus())
-    else if event.which == 37 # Left key
-      @goLeft()
-      @whenIdle(=> @updateStatus())
-    else if event.which == 38 # Up key
-      @goForward()
-      @whenIdle(=> @updateStatus())
-    else if event.which == 39 # Right key
-      @goRight()
-      @whenIdle(=> @updateStatus())
-    else if event.which == 40 # Down key
-      @goBackward()
-      @whenIdle(=> @updateStatus())
+    if @status == 'playing'
+      if event.which == 82 # R key
+        @goUp()
+        @whenIdle(=>@updateStatus())
+      else if event.which == 70 # F key
+        @goDown()
+        @whenIdle(=> @updateStatus())
+      else if event.which == 37 # Left key
+        @goLeft()
+        @whenIdle(=> @updateStatus())
+      else if event.which == 38 # Up key
+        @goForward()
+        @whenIdle(=> @updateStatus())
+      else if event.which == 39 # Right key
+        @goRight()
+        @whenIdle(=> @updateStatus())
+      else if event.which == 40 # Down key
+        @goBackward()
+        @whenIdle(=> @updateStatus())
+    if @status == 'won'
+       if event.which == 80 # P key
+         @playAgain()
+       else if event.which == 84 # T key
+         @tweet()
 
   disable: ->
     $(document).off('keyup')
@@ -441,8 +448,8 @@ class MazeUI3D
   updateStatus: ->
     @messagebox.html('<p>' + @currentMessage() + '</p>')
     if @maze.isFinish([@x, @y, @z])
-      @messagebox.append($('<p></p>').append(@makeTweetActionLink()).append('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;').append(@makePlayAgainActionLink()))
-      @disable()
+      @messagebox.append($('<p></p>').append(@makeActionLink('<span class=shortcut>t</span>weet', => @tweet())).append('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;').append(@makeActionLink('<span class=shortcut>p</span>lay again', => @playAgain())))
+      @status = 'won'
     if [@x, @y, @z] of @maze.portals
       level = @maze.portals[[@x, @y, @z]]
       @destroy(=>
@@ -451,22 +458,12 @@ class MazeUI3D
               @viewport)
       )
 
-  makeTweetActionLink: ->
-    $('<a></a>')
-        .attr({
-            class: 'actionLink'
-            target: '_blank'
-            href: 'https://twitter.com/share?text=' + encodeURIComponent(
-                @makeTweetText())
-        })
-        .append('tweet')
-
-  makePlayAgainActionLink: =>
+  makeActionLink: (text, callback) =>
     $('<a></a>')
         .attr({
             class: 'actionLink'
             href: '#'
-        }).append('play again').click(=> @playAgain())
+        }).append(text).click(callback)
 
   playAgain: =>
     @destroy(=>
@@ -474,8 +471,13 @@ class MazeUI3D
             @messagebox, @viewport)
     )
 
+  tweet: =>
+    window.open('https://twitter.com/share?text=' + encodeURIComponent(
+        @makeTweetText()))
+
   makeTweetText: ->
-    "I solved a #{@maze.dimensions[0]}x#{@maze.dimensions[1]}x#{@maze.dimensions[2]} maze in #{@moves} moves at https://texttheater.net/maze/"
+    window.location.hash = ''
+    "I solved a #{@maze.dimensions[0]}x#{@maze.dimensions[1]}x#{@maze.dimensions[2]} #maze in #{@moves} moves at https://texttheater.net/maze/"
 
 class LevelChooserUI extends MazeUI3D
 
