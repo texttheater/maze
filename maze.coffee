@@ -476,8 +476,8 @@ class MazeUI3D
         @makeTweetText()))
 
   makeTweetText: ->
-    window.location.hash = ''
-    "I solved a #{@maze.dimensions[0]}x#{@maze.dimensions[1]}x#{@maze.dimensions[2]} #maze in #{@moves} moves!"
+    article = if @maze.dimensions[0] == 8 then 'an' else 'a' # Grammar, baby!
+    "I solved #{article} #{@maze.dimensions[0]}x#{@maze.dimensions[1]}x#{@maze.dimensions[2]} #maze in #{@moves} moves!"
 
 class LevelChooserUI extends MazeUI3D
 
