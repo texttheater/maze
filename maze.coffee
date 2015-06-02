@@ -477,7 +477,7 @@ class MazeUI3D
 
   makeTweetText: ->
     window.location.hash = ''
-    "I solved a #{@maze.dimensions[0]}x#{@maze.dimensions[1]}x#{@maze.dimensions[2]} #maze in #{@moves} moves at https://texttheater.net/maze/"
+    "I solved a #{@maze.dimensions[0]}x#{@maze.dimensions[1]}x#{@maze.dimensions[2]} #maze in #{@moves} moves!"
 
 class LevelChooserUI extends MazeUI3D
 
