@@ -11,6 +11,6 @@ Polishing
 * layout ✔
 * nice user guidance ✔
 * social media integration ⌛
-* keyboard shortcuts for action links
+* keyboard shortcuts for action links ✔
 * publishing
 * mobile
