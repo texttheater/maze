@@ -482,7 +482,7 @@ class MazeUI3D
 class LevelChooserUI extends MazeUI3D
 
   currentMessage: ->
-    'Welcome to the maze! Use the arrow keys to move around and choose a level'
+    'Welcome to the maze!<br>Use the arrow keys to move and choose a level.'
 
 root = exports ? this
 root.RandomMaze = RandomMaze
