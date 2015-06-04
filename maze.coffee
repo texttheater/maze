@@ -329,34 +329,29 @@ class MazeUI3D
     if @status == 'playing'
       if event.which == 82 # R key
         @goUp()
-        @whenIdle(=>@updateStatus())
       else if event.which == 70 # F key
         @goDown()
-        @whenIdle(=> @updateStatus())
       else if event.which == 37 # Left key
         @goLeft()
-        @whenIdle(=> @updateStatus())
       else if event.which == 38 # Up key
         @goForward()
-        @whenIdle(=> @updateStatus())
       else if event.which == 39 # Right key
         @goRight()
-        @whenIdle(=> @updateStatus())
       else if event.which == 40 # Down key
         @goBackward()
-        @whenIdle(=> @updateStatus())
-    if @status == 'won'
+    if @status == 'frozen'
        if event.which == 80 # P key
          @playAgain()
        else if event.which == 84 # T key
          @tweet()
 
-  disable: ->
-    $(document).off('keyup')
+  freeze: ->
     @queue = []
+    @status = 'frozen'
 
   destroy: (complete=$.noop) ->
-    @disable()
+    @freeze()
+    $(document).off('keyup')
     @container.fadeOut(600)
     @messagebox.fadeOut(600)
     @container.promise().done(=>
@@ -376,61 +371,62 @@ class MazeUI3D
     else
       @queue.shift()()
 
-  setBusy: =>
+  startMove: =>
     @busy = true
 
-  setIdle: =>
+  moveDone: =>
+    @updateStatus()
     @busy = false
 
   goUp: ->
     @whenIdle =>
       if @maze.passageExists([[@x, @y, @z], [@x, @y, @z + 1]])
-        @setBusy()
+        @startMove()
         @floors[@z].animate(@below, 600)
         @z += 1
         @moves++
-        @floors[@z].animate(@here, 600, @setIdle)
+        @floors[@z].animate(@here, 600, @moveDone)
 
   goDown: ->
     @whenIdle =>
       if @maze.passageExists([[@x, @y, @z - 1], [@x, @y, @z]])
-        @setBusy()
+        @startMove()
         @floors[@z].animate(@above, 600)
         @z -= 1
         @moves++
-        @floors[@z].animate(@here, 600, @setIdle)
+        @floors[@z].animate(@here, 600, @moveDone)
 
   goBackward: ->
     @whenIdle =>
       if @maze.passageExists([[@x, @y, @z], [@x, @y + 1, @z]])
-        @setBusy()
+        @startMove()
         @y += 1
         @moves++
-        @movePawn(@setIdle)
+        @movePawn(@moveDone)
 
   goForward: ->
     @whenIdle =>
       if @maze.passageExists([[@x, @y - 1, @z], [@x, @y, @z]])
-        @setBusy()
+        @startMove()
         @y -= 1
         @moves++
-        @movePawn(@setIdle)
+        @movePawn(@moveDone)
 
   goRight: ->
     @whenIdle =>
       if @maze.passageExists([[@x, @y, @z], [@x + 1, @y, @z]])
-        @setBusy()
+        @startMove()
         @x += 1
         @moves++
-        @movePawn(@setIdle)
+        @movePawn(@moveDone)
 
   goLeft: ->
     @whenIdle =>
       if @maze.passageExists([[@x - 1, @y, @z], [@x, @y, @z]])
-        @setBusy()
+        @startMove()
         @x -= 1
         @moves++
-        @movePawn(@setIdle)
+        @movePawn(@moveDone)
 
   movePawn: (callback) ->
     @pawn.animate({
@@ -449,11 +445,11 @@ class MazeUI3D
   updateStatus: ->
     @messagebox.html('<p>' + @currentMessage() + '</p>')
     if @maze.isFinish([@x, @y, @z])
+      @freeze()
       @messagebox.append($('<p></p>').append(@makeActionLink('<span class=shortcut>t</span>weet', => @tweet())).append('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;').append(@makeActionLink('<span class=shortcut>p</span>lay again', => @playAgain())))
-      @status = 'won'
     if [@x, @y, @z] of @maze.portals
       level = @maze.portals[[@x, @y, @z]]
-      @destroy(=>
+      @destroy( =>
           new MazeUI3D(new RandomMaze([level, level, level]), @frame,
               @messagebox,
               @viewport)
@@ -467,7 +463,7 @@ class MazeUI3D
         }).append(text).click(callback)
 
   playAgain: =>
-    @destroy(=>
+    @destroy( =>
         new LevelChooserUI(new LevelChooser(@maze.dimensions[0] + 1), @frame,
             @messagebox, @viewport)
     )
