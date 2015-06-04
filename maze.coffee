@@ -353,6 +353,7 @@ class MazeUI3D
 
   disable: ->
     $(document).off('keyup')
+    @queue = []
 
   destroy: (complete=$.noop) ->
     @disable()
