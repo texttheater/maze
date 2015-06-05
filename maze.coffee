@@ -326,7 +326,9 @@ class MazeUI3D
     @messagebox.fadeIn(600)
 
   handleEvent: (event) =>
-    if @status == 'playing'
+    if event.which == 27 or event.which == 8
+      @playAgain(@maze.dimensions[0])
+    else if @status == 'playing'
       if event.which == 82 # R key
         @goUp()
       else if event.which == 70 # F key
@@ -339,9 +341,9 @@ class MazeUI3D
         @goRight()
       else if event.which == 40 # Down key
         @goBackward()
-    if @status == 'frozen'
+    else if @status == 'frozen'
        if event.which == 80 # P key
-         @playAgain()
+         @playAgain(@maze.dimensions[0] + 1)
        else if event.which == 84 # T key
          @tweet()
 
@@ -446,7 +448,7 @@ class MazeUI3D
     @messagebox.html('<p>' + @currentMessage() + '</p>')
     if @maze.isFinish([@x, @y, @z])
       @freeze()
-      @messagebox.append($('<p></p>').append(@makeActionLink('<span class=shortcut>t</span>weet', => @tweet())).append('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;').append(@makeActionLink('<span class=shortcut>p</span>lay again', => @playAgain())))
+      @messagebox.append($('<p></p>').append(@makeActionLink('<span class=shortcut>t</span>weet', => @tweet())).append('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;').append(@makeActionLink('<span class=shortcut>p</span>lay again', => @playAgain(@maze.dimensions[0] + 1))))
     if [@x, @y, @z] of @maze.portals
       level = @maze.portals[[@x, @y, @z]]
       @destroy( =>
@@ -462,10 +464,10 @@ class MazeUI3D
             href: '#'
         }).append(text).click(callback)
 
-  playAgain: =>
+  playAgain: (nextLevel=3) =>
     @destroy( =>
-        new LevelChooserUI(new LevelChooser(@maze.dimensions[0] + 1), @frame,
-            @messagebox, @viewport)
+        new LevelChooserUI(new LevelChooser(nextLevel), @frame, @messagebox,
+                @viewport)
     )
 
   tweet: =>
