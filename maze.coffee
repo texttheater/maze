@@ -342,6 +342,8 @@ class MazeUI3D
     if @status == 'frozen'
        if event.which == 80 # P key
          @playAgain()
+       if event.which == 70 # F key
+         @facebook()
        else if event.which == 84 # T key
          @tweet()
 
@@ -446,7 +448,13 @@ class MazeUI3D
     @messagebox.html('<p>' + @currentMessage() + '</p>')
     if @maze.isFinish([@x, @y, @z])
       @freeze()
-      @messagebox.append($('<p></p>').append(@makeActionLink('<span class=shortcut>t</span>weet', => @tweet())).append('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;').append(@makeActionLink('<span class=shortcut>p</span>lay again', => @playAgain())))
+      @messagebox.append(
+          $('<p></p>')
+          .append(@makeActionLink('<span class=shortcut>t</span>weet', => @tweet()))
+          .append('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')
+          .append(@makeActionLink('<span class=shortcut>f</span>acebook', => @facebook()))
+          .append('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')
+          .append(@makeActionLink('<span class=shortcut>p</span>lay again', => @playAgain())))
     if [@x, @y, @z] of @maze.portals
       level = @maze.portals[[@x, @y, @z]]
       @destroy( =>
@@ -470,7 +478,12 @@ class MazeUI3D
 
   tweet: =>
     window.open('https://twitter.com/share?text=' + encodeURIComponent(
-        @makeTweetText()))
+        @makeTweetText()), 'tweet', 'toolbars=0,height=320,width=400')
+
+  facebook: =>
+    window.open('https://www.facebook.com/sharer.php?u=' + encodeURIComponent(
+        'https://texttheater.net/maze/'), 'facebook',
+        'toolbars=0,height=320,width=400')
 
   makeTweetText: ->
     article = if @maze.dimensions[0] == 8 then 'an' else 'a' # Grammar, baby!
