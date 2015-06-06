@@ -440,7 +440,7 @@ class MazeUI3D
 
   currentMessage: ->
     if @maze.isFinish([@x, @y, @z])
-      "Yay! You masterd the #{@maze.dimensions[0]}x#{maze.dimensions[1]}x#{@maze.dimensions[2]} maze in #{@moves} moves!"
+      "Yay! You masterd the #{@maze.dimensions[0]}x#{@maze.dimensions[1]}x#{@maze.dimensions[2]} maze in #{@moves} moves!"
     else if @maze.passageExists([[@x, @y, @z], [@x, @y, @z + 1]]) or @maze.passageExists([[@x, @y, @z - 1], [@x, @y, @z]])
       MazeUI3D.msg['updown']
     else
