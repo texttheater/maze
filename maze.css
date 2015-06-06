@@ -4,6 +4,7 @@ body {
 
 div#maze {
 	margin: auto;
+	overflow: hidden;
 }
 
 div#messagebox {
